@@ -8,3 +8,8 @@ app.use(userRoutes)
 app.use(courseRoutes)
 
 
+app.listen(3005, () => {
+    console.log(`node API is running on port 3005`)
+})
+
+
