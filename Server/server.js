@@ -1,26 +1,29 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const dotenv = require('dotenv').config();
+const PORT = process.env.PORT || 4000
+const dbConnect = require('./config/dbConnect')
+const { notFound, errorHandler } = require('./middlewares/errorHandler')
+
 const studentRoutes = require('./routes/studentRoute');
 const courseRoutes = require('./routes/courseRoute');
 const lessonRoutes = require('./routes/lessonRoute');
 const commentRoutes = require('./routes/commentRoute');
 
+dbConnect()
 app.use(express.json());
-app.use(studentRoutes)
-app.use(courseRoutes)
-app.use(lessonRoutes)
-app.use(commentRoutes)
+app.use('api/students', studentRoutes)
+app.use('api/courses', courseRoutes)
+app.use('api/lessons', lessonRoutes)
+app.use('api/comments', commentRoutes)
+app.use(notFound)
+app.use(errorHandler)
 
 
 
-mongoose.set("strictQuery", false)
-mongoose.connect('mongodb+srv://admin:UW9c966cPQmwthIx@elearningapi.lx9pngr.mongodb.net/?retryWrites=true&w=majority')
-    .then(() => {
-        app.listen(3005, () => {
-            console.log(`node API is running on port 3005`)
-        })
-    })
-    .catch(err => console.log(err))
 
+app.listen(PORT, () => {
+    console.log(`Server is running at PORT ${PORT}`)
+})
 
