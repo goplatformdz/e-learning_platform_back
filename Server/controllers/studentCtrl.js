@@ -3,6 +3,20 @@ const Student = require('../models/studentModel');
 const router = new express.Router();
 const mongoose = require('mongoose');
 
+
+const loginStudent = async (req, res) => {
+    const { email, password } = req.body
+    try {
+        const findStudent = await Student.findOne({ email })
+        if (findStudent && (await findStudent.isPasswordMatched(password))) {
+            res.status(200).json({ message: 'Student logged in successfully', data: findStudent })
+        }
+        else { throw new Error('Invalid Credentials') }
+    } catch (err) {
+        throw new Error(err)
+    }
+}
+
 const createStudent = async (req, res) => {
     try {
         const { email } = req.body;

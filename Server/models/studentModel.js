@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const studentSchema = mongoose.Schema({
   firstname: {
@@ -23,6 +24,15 @@ const studentSchema = mongoose.Schema({
     ref: 'Course'
   }]
 });
+
+studentSchema.pre("save", async function (next) {
+  const salt = await bcrypt.genSaltSync(10)
+  this.password = await bcrypt.hash(this.password, salt)
+})
+
+studentSchema.methods.isPasswordMatched = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password)
+}
 
 const Student = mongoose.model('Student', studentSchema);
 
