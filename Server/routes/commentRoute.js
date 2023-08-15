@@ -6,7 +6,7 @@ const {
     updateComment,
     getComment,
     deleteComment,
-} = require('./controllers/commentCtrl');
+} = require('../controllers/commentCtrl');
 
 router.post("/addComment", createComment);
 router.put("/updateComment/:id", updateComment);

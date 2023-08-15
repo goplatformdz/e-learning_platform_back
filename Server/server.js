@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
 const mongoose = require('mongoose');
 const dotenv = require('dotenv').config();
@@ -12,11 +13,12 @@ const lessonRoutes = require('./routes/lessonRoute');
 const commentRoutes = require('./routes/commentRoute');
 
 dbConnect()
-app.use(express.json());
-app.use('api/students', studentRoutes)
-app.use('api/courses', courseRoutes)
-app.use('api/lessons', lessonRoutes)
-app.use('api/comments', commentRoutes)
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use('/api/students', studentRoutes)
+app.use('/api/courses', courseRoutes)
+app.use('/api/lessons', lessonRoutes)
+app.use('/api/comments', commentRoutes)
 app.use(notFound)
 app.use(errorHandler)
 

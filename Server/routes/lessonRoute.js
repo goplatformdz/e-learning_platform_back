@@ -6,7 +6,7 @@ const {
     updateLesson,
     getLesson,
     deleteLesson,
-} = require('./controllers/lessonCtrl')
+} = require('../controllers/lessonCtrl')
 
 router.post("/addLesson", createLesson);
 router.put("/updateLesson/:id", updateLesson);

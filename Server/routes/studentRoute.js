@@ -7,7 +7,7 @@ const {
     getStudent,
     deleteStudent,
     updateStudent,
-} = require('./controllers/studentCtrl')
+} = require('../controllers/studentCtrl')
 
 router.post("/registerStudent", createStudent);
 router.post("/loginStudent", loginStudent);

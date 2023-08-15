@@ -48,7 +48,8 @@ const updateStudent = async (req, res) => {
         },
             {
                 new: true
-            })
+            }
+        )
         if (!student) {
             const error = new Error(`Couldn't find student with the id of ${id}`)
             error.statusCode = 404
@@ -106,4 +107,5 @@ module.exports = {
     updateStudent,
     getStudent,
     deleteStudent,
+    loginStudent,
 }

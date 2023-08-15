@@ -1,5 +1,5 @@
 const express = require('express');
-const Comment = require('../models/commentModel'); // Assuming you have a commentModel file with the Comment schema
+const Comment = require('../models/commentModel');
 const router = express.Router();
 const mongoose = require('mongoose');
 
