@@ -1,23 +1,23 @@
-const express = require('express');
 const Student = require('../models/studentModel');
-const router = new express.Router();
-const mongoose = require('mongoose');
+const CustomError = require('../utils/customError');
 
 
-const loginStudent = async (req, res) => {
+const loginStudent = async (req, res, next) => {
     const { email, password } = req.body
     try {
         const findStudent = await Student.findOne({ email })
         if (findStudent && (await findStudent.isPasswordMatched(password))) {
             res.status(200).json({ message: 'Student logged in successfully', data: findStudent })
         }
-        else { throw new Error('Invalid Credentials') }
+        else {
+            return next(new CustomError('Invalid Credentials', 401))
+        }
     } catch (err) {
-        throw new Error(err)
+        return next(new CustomError('Error while logging in', 500))
     }
 }
 
-const createStudent = async (req, res) => {
+const registerStudent = async (req, res, next) => {
     try {
         const { email } = req.body;
         const findStudent = await Student.findOne({ email: email })
@@ -26,18 +26,18 @@ const createStudent = async (req, res) => {
                 const newStudent = await Student.create(req.body)
                 res.status(200).json({ message: 'Student successfully registered', data: newStudent })
             } catch (error) {
-                throw new Error(error)
+                return next(new CustomError('Registration Failed: Database Error', 500))
             }
         } else {
-            throw new Error('User already exists')
+            return next(new CustomError('Student with the same email is already registered', 400))
         }
     } catch (error) {
-        throw new Error(error)
+        return next(new CustomError('Error during registration process', 500))
     }
 }
 
 
-const updateStudent = async (req, res) => {
+const updateStudent = async (req, res, next) => {
     const { id } = req.params
     try {
         const student = await Student.findByIdAndUpdate(id, {
@@ -51,58 +51,52 @@ const updateStudent = async (req, res) => {
             }
         )
         if (!student) {
-            const error = new Error(`Couldn't find student with the id of ${id}`)
-            error.statusCode = 404
-            throw error
+            return next(new CustomError(`Student with ID ${id} not found`, 404))
         }
         res.status(200).json({ message: 'Updated Successfully', data: student })
     } catch (error) {
-        throw new Error(error)
+        return next(new CustomError('Error during student update process', 500))
     }
 }
 
 
-const getAllStudents = async (req, res) => {
+const getAllStudents = async (req, res, next) => {
     try {
         const students = await Student.find({})
         res.status(200).json(students)
     } catch (error) {
-        throw new Error(error)
+        return next(new CustomError('Error while fetching students', 500))
     }
 }
 
-const getStudent = async (req, res) => {
+const getStudent = async (req, res, next) => {
     try {
         const { id } = req.params
         const student = await Student.findById(id)
         if (!student) {
-            const error = new Error(`Couldn't find student with the id of ${id}`)
-            error.statusCode = 404
-            throw error
+            return next(new CustomError(`Student with ID ${id} not found`, 404));
         }
         res.status(200).json(student);
     } catch (error) {
-        throw new Error(error)
+        return next(new CustomError('Error while fetching student', 500));
     }
 }
 
-const deleteStudent = async (req, res) => {
+const deleteStudent = async (req, res, next) => {
     try {
-        const { id } = req.params
-        const student = await Student.findByIdAndDelete(id)
+        const { id } = req.params;
+        const student = await Student.findByIdAndDelete(id);
         if (!student) {
-            const error = new Error(`Couldn't find student with the id of ${id}`)
-            error.statusCode = 404
-            throw error
+            return next(new CustomError(`Student with ID ${id} not found`, 404));
         }
-        res.status(200).json({ message: 'Student deleted successfully' })
+        res.status(200).json({ message: 'Student deleted successfully' });
     } catch (error) {
-        throw new Error(error)
+        return next(new CustomError('Error while deleting student', 500));
     }
 }
 
 module.exports = {
-    createStudent,
+    registerStudent,
     getAllStudents,
     updateStudent,
     getStudent,

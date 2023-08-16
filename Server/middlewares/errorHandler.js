@@ -1,20 +1,19 @@
-// Not Found
 
-const notFound = (req, res, next) => {
-    const error = new Error(`Not found : ${req.originalUrl}`)
-    res.status(404)
-    next(error)
-}
-
-// Error Handler
 
 const errorHandler = (err, req, res, next) => {
     const statusCode = err.statusCode || 500
+    const status = err.status || 'ERROR'
+    const name = err.name || 'Unknown ERROR'
+    const message = err.message
+    const stack = err.stack
     res.status(statusCode)
     res.json({
-        message: err?.message,
-        stack: err?.stack
+        name,
+        status,
+        statusCode,
+        message,
+        stack,
     })
 }
 
-module.exports = { notFound, errorHandler }
+module.exports = errorHandler 

@@ -1,75 +1,77 @@
-const express = require('express');
 const Comment = require('../models/commentModel');
-const router = express.Router();
-const mongoose = require('mongoose');
+const CustomError = require('../utils/customError');
+const asyncHandler = require('express-async-handler');
 
-const createComment = async (req, res) => {
+const createComment = asyncHandler(async (req, res, next) => {
     try {
         const newComment = await Comment.create(req.body);
         res.status(200).json({ message: 'Comment successfully created', data: newComment });
     } catch (error) {
-        throw new Error(error);
+        next(new CustomError('Error while creating comment', 500));
     }
-}
+});
 
-const updateComment = async (req, res) => {
+const updateComment = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
     try {
-        const updatedComment = await Comment.findByIdAndUpdate(id, {
-            text: req?.body?.text,
-        },
+        const updatedComment = await Comment.findByIdAndUpdate(
+            id,
             {
-                new: true
-            });
+                text: req?.body?.text,
+            },
+            {
+                new: true,
+            }
+        );
+
         if (!updatedComment) {
-            const error = new Error(`Couldn't find comment with the id of ${id}`);
-            error.statusCode = 404;
-            throw error;
+            return next(new CustomError(`Couldn't find comment with the id of ${id}`, 404));
         }
+
         res.status(200).json({ message: 'Comment updated successfully', data: updatedComment });
     } catch (error) {
-        throw new Error(error);
+        next(new CustomError('Error while updating comment', 500));
     }
-}
+});
 
-const getAllComments = async (req, res) => {
+const getAllComments = asyncHandler(async (req, res, next) => {
     try {
         const comments = await Comment.find({});
         res.status(200).json(comments);
     } catch (error) {
-        throw new Error(error);
+        next(new CustomError('Error while fetching comments', 500));
     }
-}
+});
 
-const getComment = async (req, res) => {
+const getComment = asyncHandler(async (req, res, next) => {
     try {
         const { id } = req.params;
         const comment = await Comment.findById(id);
+
         if (!comment) {
-            const error = new Error(`Couldn't find comment with the id of ${id}`);
-            error.statusCode = 404;
-            throw error;
+            return next(new CustomError(`Couldn't find comment with the id of ${id}`, 404));
         }
+
         res.status(200).json(comment);
     } catch (error) {
-        throw new Error(error);
+        next(new CustomError('Error while fetching comment', 500));
     }
-}
+});
 
-const deleteComment = async (req, res) => {
+const deleteComment = asyncHandler(async (req, res, next) => {
     try {
         const { id } = req.params;
         const deletedComment = await Comment.findByIdAndDelete(id);
+
         if (!deletedComment) {
-            const error = new Error(`Couldn't find comment with the id of ${id}`);
-            error.statusCode = 404;
-            throw error;
+            return next(new CustomError(`Couldn't find comment with the id of ${id}`, 404));
         }
+
         res.status(200).json({ message: 'Comment deleted successfully' });
     } catch (error) {
-        throw new Error(error);
+        next(new CustomError('Error while deleting comment', 500));
     }
-}
+});
 
 module.exports = {
     createComment,
@@ -77,4 +79,4 @@ module.exports = {
     updateComment,
     getComment,
     deleteComment,
-}
+};

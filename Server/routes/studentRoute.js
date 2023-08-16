@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {
-    createStudent,
+    registerStudent,
     loginStudent,
     getAllStudents,
     getStudent,
@@ -9,7 +9,7 @@ const {
     updateStudent,
 } = require('../controllers/studentCtrl')
 
-router.post("/registerStudent", createStudent);
+router.post("/registerStudent", registerStudent);
 router.post("/loginStudent", loginStudent);
 router.put("/updateStudent/:id", updateStudent);
 router.delete("/deleteStudent/:id", deleteStudent);

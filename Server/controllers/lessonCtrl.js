@@ -1,79 +1,79 @@
-const express = require('express');
 const Lesson = require('../models/lessonModel');
-const router = new express.Router();
-const mongoose = require('mongoose');
+const CustomError = require('../utils/customError');
+const asyncHandler = require('express-async-handler');
 
-const createLesson = async (req, res) => {
+const createLesson = asyncHandler(async (req, res, next) => {
     try {
-        const newLesson = await Lesson.create(req.body)
-        res.status(200).json({ message: 'Lesson successfully registered', data: newLesson })
+        const newLesson = await Lesson.create(req.body);
+        res.status(200).json({ message: 'Lesson successfully added', data: newLesson });
     } catch (error) {
-        throw new Error(error)
+        return next(new CustomError('Error while creating lesson', 500));
     }
-}
+})
 
-
-const updateLesson = async (req, res) => {
-    const { id } = req.params
+const updateLesson = asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
     try {
-        const lesson = await Lesson.findByIdAndUpdate(id, {
-            lessonName: req?.body?.lessonName,
-            description: req?.body?.description,
-            duration: req?.body?.duration,
-        },
+        const lesson = await Lesson.findByIdAndUpdate(
+            id,
             {
-                new: true
-            })
+                lessonName: req?.body?.lessonName,
+                description: req?.body?.description,
+                duration: req?.body?.duration,
+            },
+            {
+                new: true,
+            }
+        );
+
         if (!lesson) {
-            const error = new Error(`Couldn't find lesson with the id of ${id}`)
-            error.statusCode = 404
-            throw error
+            return next(new CustomError(`Couldn't find lesson with the id of ${id}`, 404));
         }
-        res.status(200).json({ message: 'Updated Successfully', data: lesson })
+
+        res.status(200).json({ message: 'Updated Successfully', data: lesson });
     } catch (error) {
-        throw new Error(error)
+        return next(new CustomError('Error while updating lesson', 500));
     }
-}
+});
 
-
-const getAllLessons = async (req, res) => {
+const getAllLessons = asyncHandler(async (req, res, next) => {
     try {
-        const lessons = await Lesson.find({})
-        res.status(200).json(lessons)
+        const lessons = await Lesson.find({});
+        res.status(200).json(lessons);
     } catch (error) {
-        throw new Error(error)
+        return next(new CustomError('Error while fetching lessons', 500));
     }
-}
+});
 
-const getLesson = async (req, res) => {
+const getLesson = asyncHandler(async (req, res) => {
     try {
-        const { id } = req.params
-        const lesson = await Lesson.findById(id)
+        const { id } = req.params;
+        const lesson = await Lesson.findById(id);
+
         if (!lesson) {
-            const error = new Error(`Couldn't find lesson with the id of ${id}`)
-            error.statusCode = 404
-            throw error
+            return next(new CustomError(`Couldn't find lesson with the id of ${id}`, 404));
         }
+
         res.status(200).json(lesson);
     } catch (error) {
-        throw new Error(error)
+        return next(new CustomError('Error while fetching lesson', 500));
     }
-}
+});
 
-const deleteLesson = async (req, res) => {
+const deleteLesson = asyncHandler(async (req, res, next) => {
     try {
-        const { id } = req.params
-        const lesson = await Lesson.findByIdAndDelete(id)
+        const { id } = req.params;
+        const lesson = await Lesson.findByIdAndDelete(id);
+
         if (!lesson) {
-            const error = new Error(`Couldn't find lesson with the id of ${id}`)
-            error.statusCode = 404
-            throw error
+            return next(new CustomError(`Couldn't find lesson with the id of ${id}`, 404));
         }
-        res.status(200).json({ message: 'Lesson deleted successfully' })
+
+        res.status(200).json({ message: 'Lesson deleted successfully' });
     } catch (error) {
-        throw new Error(error)
+        return next(new CustomError('Error while deleting lesson', 500));
     }
-}
+});
 
 module.exports = {
     createLesson,
