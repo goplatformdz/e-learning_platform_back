@@ -95,6 +95,32 @@ const deleteStudent = async (req, res, next) => {
     }
 }
 
+const sendNewsletterConfirmationEmail = async (email) => {
+    try {
+      const transporter = nodemailer.createTransport({
+        // Configure your email service here
+        service: 'Gmail', // Change to your email service provider
+        auth: {
+          user: 'managerplatfrome@gmail.com', // Your email address
+          pass: 'bxxgfzclxhbodiws',   // Your email password or app-specific password
+        },
+      });
+  
+      const mailOptions = {
+        from: 'managerplatfrome@gmail.com', // Sender address
+        to: email,                      // Recipient address (student's email)
+        subject: 'Newsletter Subscription Confirmation',
+        text: 'Thank you for subscribing to our newsletter!',
+        html: '<p>Thank you for subscribing to our newsletter!</p>',
+      };
+  
+      await transporter.sendMail(mailOptions);
+    } catch (error) {
+      console.error('Error sending confirmation email:', error);
+      throw new Error('An error occurred while sending the confirmation email');
+    }
+  };
+
 module.exports = {
     registerStudent,
     getAllStudents,
@@ -102,4 +128,6 @@ module.exports = {
     getStudent,
     deleteStudent,
     loginStudent,
+    sendNewsletterConfirmationEmail,
+
 }
