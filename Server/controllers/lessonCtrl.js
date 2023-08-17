@@ -11,6 +11,7 @@ const createLesson = asyncHandler(async (req, res, next) => {
     }
 })
 
+
 const updateLesson = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
     try {

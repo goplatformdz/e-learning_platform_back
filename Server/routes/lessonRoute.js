@@ -7,7 +7,9 @@ const {
     getLesson,
     deleteLesson,
 } = require('../controllers/lessonCtrl')
+const { validateToken } = require('../middleWares/validateToken');
 
+router.use(validateToken)
 router.post("/addLesson", createLesson);
 router.put("/updateLesson/:id", updateLesson);
 router.delete("/deleteLesson/:id", deleteLesson);

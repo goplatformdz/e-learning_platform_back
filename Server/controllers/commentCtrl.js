@@ -54,7 +54,7 @@ const getComment = asyncHandler(async (req, res, next) => {
 
         res.status(200).json(comment);
     } catch (error) {
-        next(new CustomError('Error while fetching comment', 500));
+        next(new CustomError(error.message, 500));
     }
 });
 

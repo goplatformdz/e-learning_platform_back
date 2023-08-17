@@ -3,8 +3,15 @@ const CustomError = require('../utils/customError');
 const asyncHandler = require('express-async-handler');
 
 const createCourse = asyncHandler(async (req, res, next) => {
+    const { courseName, description, instructor } = req.body;
     try {
-        const newCourse = await Course.create(req.body);
+        const newCourse = await Course.create({
+            courseName,
+            description,
+            instructor,
+            student_id: req.currentStudent.id
+
+        });
         res.status(200).json({ message: 'Course successfully created', data: newCourse });
     } catch (error) {
         next(new CustomError('Error while creating course', 500));
@@ -45,6 +52,15 @@ const getAllCourses = asyncHandler(async (req, res, next) => {
     }
 });
 
+const getAllCoursesForCurrentStudent = asyncHandler(async (req, res, next) => {
+    try {
+        const courses = await Course.find({ student_id: req.currentStudent.id });
+        res.status(200).json(courses);
+    } catch (error) {
+        next(new CustomError('Error while fetching courses for current ', 500));
+    }
+});
+
 const getCourse = asyncHandler(async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -81,4 +97,5 @@ module.exports = {
     updateCourse,
     getCourse,
     deleteCourse,
+    getAllCoursesForCurrentStudent
 };
