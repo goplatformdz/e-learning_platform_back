@@ -7,27 +7,16 @@ const {
     getStudent,
     deleteStudent,
     updateStudent,
+    subscribeToNewsLetter
 } = require('../controllers/studentCtrl')
+const { validateToken } = require('../middleWares/validateToken');
 
 router.post("/registerStudent", registerStudent);
 router.post("/loginStudent", loginStudent);
-router.put("/updateStudent/:id", updateStudent);
-router.delete("/deleteStudent/:id", deleteStudent);
-router.get("/all-students", getAllStudents);
-router.get("/:id", getStudent);
-
-// New route for subscribing to the newsletter and sending confirmation email
-router.post('/subscribe-newsletter', async (req, res) => {
-    try {
-        const { email } = req.body;
-        await sendNewsletterConfirmationEmail(email);
-
-        // Respond to the client
-        res.status(200).json({ message: 'Newsletter subscription confirmed' });
-    } catch (error) {
-        console.error('Error subscribing to newsletter:', error);
-        res.status(500).json({ error: 'An error occurredd' });
-    }
-});
+router.put("/updateStudent/:id", validateToken, updateStudent);
+router.delete("/deleteStudent/:id", validateToken, deleteStudent);
+router.get("/all-students", validateToken, getAllStudents);
+router.get("/:id", validateToken, getStudent);
+router.post('/subscribe-newsletter', validateToken, subscribeToNewsLetter)
 
 module.exports = router;

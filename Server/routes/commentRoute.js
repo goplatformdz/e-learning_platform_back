@@ -7,7 +7,9 @@ const {
     getComment,
     deleteComment,
 } = require('../controllers/commentCtrl');
+const { validateToken } = require('../middleWares/validateToken');
 
+router.use(validateToken)
 router.post("/addComment", createComment);
 router.put("/updateComment/:id", updateComment);
 router.delete("/deleteComment/:id", deleteComment);
