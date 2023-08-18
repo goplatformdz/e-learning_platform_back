@@ -6,7 +6,8 @@ const {
     updateCourse,
     getCourse,
     deleteCourse,
-    getAllCoursesForCurrentStudent
+    getAllCoursesForCurrentStudent,
+    searchByCourseName
 } = require('../controllers/courseCtrl');
 const { validateToken } = require('../middleWares/validateToken');
 
@@ -17,5 +18,6 @@ router.delete("/deleteCourse/:id", deleteCourse);
 router.get("/all-courses", getAllCourses);
 router.get("/all-courses/byStudent", getAllCoursesForCurrentStudent);
 router.get("/:id", getCourse);
+router.get('/serch_course',searchByCourseName);
 
 module.exports = router;
