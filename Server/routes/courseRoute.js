@@ -17,7 +17,8 @@ router.put("/updateCourse/:id", updateCourse);
 router.delete("/deleteCourse/:id", deleteCourse);
 router.get("/all-courses", getAllCourses);
 router.get("/all-courses/byStudent", getAllCoursesForCurrentStudent);
-router.get("/:id", getCourse);
 router.get('/serch_course',searchByCourseName);
+router.get("/:id", getCourse);
+
 
 module.exports = router;
