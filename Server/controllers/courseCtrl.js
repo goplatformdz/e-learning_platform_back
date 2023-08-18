@@ -43,6 +43,24 @@ const updateCourse = asyncHandler(async (req, res, next) => {
     }
 });
 
+const searchByCourseName = async (req, res) => {
+    try {
+        const courseName = req.body.name;
+
+        if (!courseName) {
+            return res.status(400).json({ success: false, message: 'Course name is required.' });
+        }
+
+        const regex = new RegExp(courseName, 'i'); // 'i' flag for case-insensitive search
+
+        const result = await Course.find({ courseName: regex });
+
+        res.status(200).json({ success: true, result });
+    } catch (error) {
+        res.status(500).json({ success: false, error });
+    }
+};
+
 const getAllCourses = asyncHandler(async (req, res, next) => {
     try {
         const courses = await Course.find({});
@@ -97,5 +115,6 @@ module.exports = {
     updateCourse,
     getCourse,
     deleteCourse,
-    getAllCoursesForCurrentStudent
+    getAllCoursesForCurrentStudent,
+    searchByCourseName
 };
