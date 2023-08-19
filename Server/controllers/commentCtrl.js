@@ -18,6 +18,8 @@ const updateComment = asyncHandler(async (req, res, next) => {
             id,
             {
                 text: req?.body?.text,
+                lesson_id: req?.body?.lesson_id
+
             },
             {
                 new: true,

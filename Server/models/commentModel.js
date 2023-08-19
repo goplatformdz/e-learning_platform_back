@@ -11,7 +11,9 @@ const commentSchema = mongoose.Schema({
     },
     lesson_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Lesson'
+        ref: 'Lesson',
+        required: true
+
     }
 
 });

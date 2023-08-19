@@ -21,6 +21,8 @@ const updateLesson = asyncHandler(async (req, res, next) => {
                 lessonName: req?.body?.lessonName,
                 description: req?.body?.description,
                 duration: req?.body?.duration,
+                course_id: req?.body?.course_id
+
             },
             {
                 new: true,
