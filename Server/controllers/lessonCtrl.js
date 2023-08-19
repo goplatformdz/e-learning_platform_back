@@ -61,6 +61,24 @@ const getLesson = asyncHandler(async (req, res) => {
     }
 });
 
+const searchByLessonName = asyncHandler(async (req, res, next) => {
+    try {
+        const { lessonName } = req.body;
+
+        if (!lessonName) {
+            return next(new CustomError('Lesson name is required.', 500));
+        }
+
+        const regex = new RegExp(lessonName, 'i'); // 'i' flag for case-insensitive search
+
+        const result = await Lesson.find({ lessonName: regex });
+
+        res.status(200).json({ success: true, result });
+    } catch (error) {
+        next(new CustomError(error.message, 500));
+    }
+});
+
 const deleteLesson = asyncHandler(async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -82,4 +100,5 @@ module.exports = {
     updateLesson,
     getLesson,
     deleteLesson,
+    searchByLessonName
 }

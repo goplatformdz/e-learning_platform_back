@@ -9,6 +9,10 @@ const commentSchema = mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    lesson_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Lesson'
+    }
 
 });
 

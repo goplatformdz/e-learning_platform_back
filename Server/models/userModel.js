@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const studentSchema = mongoose.Schema({
+const userSchema = mongoose.Schema({
   firstname: {
     type: String,
     required: true
@@ -19,21 +19,23 @@ const studentSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  courseEnrolled: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Course'
-  }]
+  role: {
+    type: String,
+    enum: ['student', 'admin'],
+    default: 'student',
+    required: true
+  }
 });
 
-studentSchema.pre("save", async function (next) {
+userSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSaltSync(10)
   this.password = await bcrypt.hash(this.password, salt)
 })
 
-studentSchema.methods.isPasswordMatched = async function (enteredPassword) {
+userSchema.methods.isPasswordMatched = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password)
 }
 
-const Student = mongoose.model('Student', studentSchema);
+const User = mongoose.model('User', userSchema);
 
-module.exports = Student;
+module.exports = User;
