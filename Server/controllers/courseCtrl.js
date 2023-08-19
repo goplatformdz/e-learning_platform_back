@@ -9,7 +9,6 @@ const createCourse = asyncHandler(async (req, res, next) => {
             courseName,
             description,
             instructor,
-            student_id: req.currentStudent.id
 
         });
         res.status(200).json({ message: 'Course successfully created', data: newCourse });
@@ -43,12 +42,12 @@ const updateCourse = asyncHandler(async (req, res, next) => {
     }
 });
 
-const searchByCourseName = async (req, res) => {
+const searchByCourseName = asyncHandler(async (req, res, next) => {
     try {
-        const courseName = req.body.name;
+        const { courseName } = req.body;
 
         if (!courseName) {
-            return res.status(400).json({ success: false, message: 'Course name is required.' });
+            return next(new CustomError('Course name is required.', 500));
         }
 
         const regex = new RegExp(courseName, 'i'); // 'i' flag for case-insensitive search
@@ -57,9 +56,9 @@ const searchByCourseName = async (req, res) => {
 
         res.status(200).json({ success: true, result });
     } catch (error) {
-        res.status(500).json({ success: false, error });
+        next(new CustomError(error.message, 500));
     }
-};
+});
 
 const getAllCourses = asyncHandler(async (req, res, next) => {
     try {
@@ -70,14 +69,6 @@ const getAllCourses = asyncHandler(async (req, res, next) => {
     }
 });
 
-const getAllCoursesForCurrentStudent = asyncHandler(async (req, res, next) => {
-    try {
-        const courses = await Course.find({ student_id: req.currentStudent.id });
-        res.status(200).json(courses);
-    } catch (error) {
-        next(new CustomError('Error while fetching courses for current ', 500));
-    }
-});
 
 const getCourse = asyncHandler(async (req, res, next) => {
     try {
@@ -115,6 +106,5 @@ module.exports = {
     updateCourse,
     getCourse,
     deleteCourse,
-    getAllCoursesForCurrentStudent,
     searchByCourseName
 };

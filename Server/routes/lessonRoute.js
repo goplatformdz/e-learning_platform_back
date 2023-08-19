@@ -6,14 +6,16 @@ const {
     updateLesson,
     getLesson,
     deleteLesson,
+    searchByLessonName
 } = require('../controllers/lessonCtrl')
-const { validateToken } = require('../middleWares/validateToken');
+const { validateToken, isAdmin } = require('../middlewares/validateToken')
 
 router.use(validateToken)
-router.post("/addLesson", createLesson);
-router.put("/updateLesson/:id", updateLesson);
-router.delete("/deleteLesson/:id", deleteLesson);
-router.get("/all-lessons", getAllLessons);
-router.get("/:id", getLesson);
+router.post("/addLesson", validateToken, isAdmin, createLesson);
+router.put("/updateLesson/:id", validateToken, isAdmin, updateLesson);
+router.delete("/deleteLesson/:id", validateToken, isAdmin, deleteLesson);
+router.get("/all-lessons", validateToken, getAllLessons);
+router.get('/search_lesson', validateToken, searchByLessonName);
+router.get("/:id", validateToken, isAdmin, getLesson);
 
 module.exports = router;

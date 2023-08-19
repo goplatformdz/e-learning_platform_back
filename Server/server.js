@@ -3,11 +3,12 @@ const app = express();
 const dotenv = require('dotenv').config();
 const PORT = process.env.PORT || 4000
 const dbConnect = require('./config/dbConnect')
-const errorHandler = require('./middleWares/errorHandler')
-const studentRoutes = require('./routes/studentRoute');
+const errorHandler = require('./middlewares/errorHandler')
+const usersRoutes = require('./routes/userRoute');
 const courseRoutes = require('./routes/courseRoute');
 const lessonRoutes = require('./routes/lessonRoute');
 const commentRoutes = require('./routes/commentRoute');
+const enrollmentRoutes = require('./routes/enrollmentRoute');
 const CustomError = require('./utils/customError');
 const cookieParser = require('cookie-parser')
 
@@ -15,10 +16,11 @@ dbConnect()
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use('/api/students', studentRoutes)
+app.use('/api/users', usersRoutes)
 app.use('/api/courses', courseRoutes)
 app.use('/api/lessons', lessonRoutes)
 app.use('/api/comments', commentRoutes)
+app.use('/api/enrollments', enrollmentRoutes)
 
 app.all('*', (req, res, next) => {
     next(new CustomError(`Url Not found : ${req.originalUrl}`, 404))

@@ -6,19 +6,17 @@ const {
     updateCourse,
     getCourse,
     deleteCourse,
-    getAllCoursesForCurrentStudent,
     searchByCourseName
 } = require('../controllers/courseCtrl');
-const { validateToken } = require('../middleWares/validateToken');
+const { validateToken, isAdmin } = require('../middlewares/validateToken');
 
 router.use(validateToken)
-router.post("/addCourse", createCourse);
-router.put("/updateCourse/:id", updateCourse);
-router.delete("/deleteCourse/:id", deleteCourse);
-router.get("/all-courses", getAllCourses);
-router.get("/all-courses/byStudent", getAllCoursesForCurrentStudent);
-router.get('/search_course', searchByCourseName);
-router.get("/:id", getCourse);
+router.post("/addCourse", validateToken, isAdmin, createCourse);
+router.put("/updateCourse/:id", validateToken, isAdmin, updateCourse);
+router.delete("/deleteCourse/:id", validateToken, isAdmin, deleteCourse);
+router.get("/all-courses", validateToken, getAllCourses);
+router.get('/search_course', validateToken, searchByCourseName);
+router.get("/:id", validateToken, isAdmin, getCourse);
 
 
 module.exports = router;
