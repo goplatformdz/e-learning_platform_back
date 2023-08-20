@@ -5,7 +5,17 @@ const asyncHandler = require('express-async-handler');
 
 const createCourse = asyncHandler(async (req, res, next) => {
     try {
-        const newCourse = await Course.create(req.body);
+        const { courseName, description, instructor, categoryName } = req.body
+
+        const category = await Category.findOne({ name: categoryName })
+        if (!category) return next(new CustomError(`Category with the name of ${categoryName} does not exist`, 404));
+        const newCourse = await Course.create({
+            courseName,
+            description,
+            instructor,
+            category: category._id
+
+        });
         res.status(200).json({ message: 'Course successfully created', data: newCourse });
     } catch (error) {
         next(new CustomError('Error while creating course', 500));
@@ -13,14 +23,19 @@ const createCourse = asyncHandler(async (req, res, next) => {
 });
 
 const updateCourse = asyncHandler(async (req, res, next) => {
-    const { id } = req.params;
     try {
+        const { id } = req.params;
+        const { courseName, description, instructor, categoryName } = req.body
+        const category = await Category.findOne({ name: categoryName });
+        if (!category) return next(new CustomError(`Category with the name of ${categoryName} does not exist`, 404));
+
         const course = await Course.findByIdAndUpdate(
             id,
             {
-                courseName: req?.body?.courseName,
-                description: req?.body?.description,
-                instructor: req?.body?.instructor,
+                courseName,
+                description,
+                instructor,
+                category: category._id
             },
             {
                 new: true,
@@ -57,7 +72,7 @@ const searchByCourseName = asyncHandler(async (req, res, next) => {
 
 const getAllCourses = asyncHandler(async (req, res, next) => {
     try {
-        const courses = await Course.find({});
+        const courses = await Course.find({}).populate('category');
         res.status(200).json(courses);
     } catch (error) {
         next(new CustomError('Error while fetching courses', 500));
@@ -79,6 +94,24 @@ const getCourse = asyncHandler(async (req, res, next) => {
         next(new CustomError('Error while fetching course', 500));
     }
 });
+
+
+const getCoursesByCategory = asyncHandler(async (req, res) => {
+    try {
+        const { categoryName } = req.body;
+
+
+        const category = await Category.findOne({ name: categoryName });
+        if (!category) return next(new CustomError(`Category with the name of ${categoryName} does not exist`, 404));
+
+        const courses = await Course.find({ category: category._id });
+
+        res.status(200).json(courses);
+    } catch (error) {
+        next(new CustomError('Error while fetching courses by category', 500));
+    }
+});
+
 
 const deleteCourse = asyncHandler(async (req, res, next) => {
     try {
@@ -102,4 +135,5 @@ module.exports = {
     getCourse,
     deleteCourse,
     searchByCourseName,
+    getCoursesByCategory
 };

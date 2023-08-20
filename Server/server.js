@@ -10,7 +10,6 @@ const lessonRoutes = require('./routes/lessonRoute');
 const commentRoutes = require('./routes/commentRoute');
 const enrollmentRoutes = require('./routes/enrollmentRoute');
 const categoryRoutes = require('./routes/categoryRoute');
-const categoryCourseRoutes = require('./routes/categoryCourseRoute');
 const CustomError = require('./utils/customError');
 const cookieParser = require('cookie-parser')
 
@@ -24,7 +23,7 @@ app.use('/api/lessons', lessonRoutes)
 app.use('/api/comments', commentRoutes)
 app.use('/api/enrollments', enrollmentRoutes)
 app.use('/api/categories', categoryRoutes)
-app.use('/api/categoryCourse', categoryCourseRoutes)
+
 
 app.all('*', (req, res, next) => {
     next(new CustomError(`Url Not found : ${req.originalUrl}`, 404))

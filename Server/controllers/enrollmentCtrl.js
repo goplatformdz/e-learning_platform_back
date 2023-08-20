@@ -41,6 +41,7 @@ const getCoursesEnrolledByStudent = asyncHandler(async (req, res, next) => {
             { student: req.currentUser.id, course: { $ne: null } },
             { _id: 0, student: 0 })
             .populate('course');
+
         const flattenedCourses = enrolledCourses.flatMap(item => item.course);
 
         if (enrolledCourses.length === 0) {

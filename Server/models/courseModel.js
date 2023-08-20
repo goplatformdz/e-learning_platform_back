@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const courseSchema = mongoose.Schema({
     courseName: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     description: {
         type: String,
@@ -13,9 +14,10 @@ const courseSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    category_id: {
+    category: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category'
+        ref: 'Category',
+        required: true
     }
 });
 

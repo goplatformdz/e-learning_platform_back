@@ -7,6 +7,7 @@ const {
     getCourse,
     deleteCourse,
     searchByCourseName,
+    getCoursesByCategory
 } = require('../controllers/courseCtrl');
 const { validateToken, isAdmin } = require('../middlewares/validateToken');
 
@@ -16,7 +17,8 @@ router.put("/updateCourse/:id", validateToken, isAdmin, updateCourse);
 router.delete("/deleteCourse/:id", validateToken, isAdmin, deleteCourse);
 router.get("/all-courses", validateToken, getAllCourses);
 router.get('/search_course', validateToken, searchByCourseName);
-router.get("/:id", validateToken, isAdmin, getCourse);
+router.get("/getCourse/:id", validateToken, isAdmin, getCourse);
+router.get("/coursesByCategory", validateToken, getCoursesByCategory);
 
 
 
