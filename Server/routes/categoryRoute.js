@@ -10,7 +10,7 @@ const {
 } = require('../controllers/categoryCtrl');
 const { validateToken, isAdmin } = require('../middlewares/validateToken');
 
-router.use(validateToken);
+
 router.post("/addCategory", validateToken, isAdmin, createCategory);
 router.put("/updateCategory/:id", validateToken, isAdmin, updateCategory);
 router.delete("/deleteCategory/:id", validateToken, isAdmin, deleteCategory);

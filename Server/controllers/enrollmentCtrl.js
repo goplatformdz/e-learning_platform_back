@@ -33,7 +33,7 @@ const enrollInCourse = asyncHandler(async (req, res, next) => {
 
 
 // Get the list of courses enrolled by a student
-const getCoursesEnrolledByStudent = asyncHandler(async (req, res, next) => {
+const getCoursesByStudent = asyncHandler(async (req, res, next) => {
     try {
 
         // Find the enrolled courses for the student
@@ -56,5 +56,5 @@ const getCoursesEnrolledByStudent = asyncHandler(async (req, res, next) => {
 
 module.exports = {
     enrollInCourse,
-    getCoursesEnrolledByStudent
+    getCoursesByStudent
 };

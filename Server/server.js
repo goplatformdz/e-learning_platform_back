@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const dotenv = require('dotenv').config();
 const PORT = process.env.PORT || 4000
 const dbConnect = require('./config/dbConnect')
@@ -10,11 +11,13 @@ const lessonRoutes = require('./routes/lessonRoute');
 const commentRoutes = require('./routes/commentRoute');
 const enrollmentRoutes = require('./routes/enrollmentRoute');
 const categoryRoutes = require('./routes/categoryRoute');
+const shareRoutes = require('./routes/shareRoute');
 const CustomError = require('./utils/customError');
 const cookieParser = require('cookie-parser')
 
 dbConnect()
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use('/api/users', usersRoutes)
@@ -23,6 +26,7 @@ app.use('/api/lessons', lessonRoutes)
 app.use('/api/comments', commentRoutes)
 app.use('/api/enrollments', enrollmentRoutes)
 app.use('/api/categories', categoryRoutes)
+app.use('/api/share', shareRoutes)
 
 
 app.all('*', (req, res, next) => {

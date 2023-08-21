@@ -5,6 +5,7 @@ const User = require('../models/userModel');
 
 
 const validateToken = asyncHandler(async (req, res, next) => {
+
     const accessToken = req.cookies["access-token"]
 
     if (!accessToken) return next(new CustomError("User not authenticated or token expired", 400))

@@ -12,7 +12,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
             const accessToken = generateToken(user);
             res.cookie(
                 'access-token', accessToken,
-                { maxAge: 24 * 60 * 60 * 1000 }
+                { maxAge: 24 * 60 * 60 * 1000, }
             );
             res.status(200).json({ message: 'User logged in successfully', data: user });
         } else {

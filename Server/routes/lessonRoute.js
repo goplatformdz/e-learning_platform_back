@@ -10,7 +10,6 @@ const {
 } = require('../controllers/lessonCtrl')
 const { validateToken, isAdmin } = require('../middlewares/validateToken')
 
-router.use(validateToken)
 router.post("/addLesson", validateToken, isAdmin, createLesson);
 router.put("/updateLesson/:id", validateToken, isAdmin, updateLesson);
 router.delete("/deleteLesson/:id", validateToken, isAdmin, deleteLesson);

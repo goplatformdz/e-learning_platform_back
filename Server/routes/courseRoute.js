@@ -11,7 +11,7 @@ const {
 } = require('../controllers/courseCtrl');
 const { validateToken, isAdmin } = require('../middlewares/validateToken');
 
-router.use(validateToken)
+
 router.post("/addCourse", validateToken, isAdmin, createCourse);
 router.put("/updateCourse/:id", validateToken, isAdmin, updateCourse);
 router.delete("/deleteCourse/:id", validateToken, isAdmin, deleteCourse);
