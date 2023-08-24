@@ -6,7 +6,8 @@ const baseUrl = 'http://localhost:8000';
 
 const shareToFacebook = asyncHandler(async (req, res, next) => {
     const websiteUrl = baseUrl;
-    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(websiteUrl)}`;
+    const message = 'Check out this awesome e-learning platform!'
+    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(websiteUrl)}&quote=${encodeURIComponent(message)}`;
     if (!facebookShareUrl) {
         return next(new CustomError('Invalid sharing url', 500))
     }

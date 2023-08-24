@@ -7,7 +7,8 @@ const {
     getCourse,
     deleteCourse,
     searchByCourseName,
-    getCoursesByCategory
+    getCoursesByCategory,
+
 } = require('../controllers/courseCtrl');
 const { validateToken, isAdmin } = require('../middlewares/validateToken');
 
@@ -19,6 +20,7 @@ router.get("/all-courses", validateToken, getAllCourses);
 router.get('/search_course', validateToken, searchByCourseName);
 router.get("/getCourse/:id", validateToken, isAdmin, getCourse);
 router.get("/coursesByCategory", validateToken, getCoursesByCategory);
+
 
 
 

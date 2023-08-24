@@ -1,15 +1,29 @@
 const Lesson = require('../models/lessonModel');
+const Course = require('../models/courseModel');
 const CustomError = require('../utils/customError');
 const asyncHandler = require('express-async-handler');
+const Enrollment = require('../models/enrollmentModel');
+
 
 const createLesson = asyncHandler(async (req, res, next) => {
     try {
-        const newLesson = await Lesson.create(req.body);
-        res.status(200).json({ message: 'Lesson successfully added', data: newLesson });
+        const { lessonName, description, duration, video, courseName } = req.body
+
+        const course = await Course.findOne({ courseName: courseName })
+        if (!course) return next(new CustomError(`Course with the name of ${courseName} does not exist`, 404));
+        const newLesson = await Lesson.create({
+            lessonName,
+            description,
+            duration,
+            video,
+            course_id: course._id
+
+        });
+        res.status(200).json({ message: 'Lesson successfully created', data: newLesson });
     } catch (error) {
-        return next(new CustomError('Error while creating lesson', 500));
+        return next(new CustomError(error.message, 500));
     }
-})
+});
 
 
 const updateLesson = asyncHandler(async (req, res, next) => {
@@ -21,6 +35,7 @@ const updateLesson = asyncHandler(async (req, res, next) => {
                 lessonName: req?.body?.lessonName,
                 description: req?.body?.description,
                 duration: req?.body?.duration,
+                video: req?.body?.video,
                 course_id: req?.body?.course_id
 
             },
@@ -39,16 +54,53 @@ const updateLesson = asyncHandler(async (req, res, next) => {
     }
 });
 
-const getAllLessons = asyncHandler(async (req, res, next) => {
+const getAllLessonsAdmin = asyncHandler(async (req, res, next) => {
     try {
-        const lessons = await Lesson.find({});
+        const { courseName } = req.body;
+
+
+        const course = await Course.findOne({ courseName: courseName });
+        if (!course) return next(new CustomError(`Course with the name of ${courseName} does not exist`, 404));
+
+        const lessons = await Lesson.find({ course_id: course._id });
         res.status(200).json(lessons);
     } catch (error) {
-        return next(new CustomError('Error while fetching lessons', 500));
+        next(new CustomError(error.message, 500));
     }
 });
 
-const getLesson = asyncHandler(async (req, res) => {
+const getAllLessons = asyncHandler(async (req, res, next) => {
+    try {
+        const { courseName } = req.body;
+
+
+        const course = await Course.findOne({ courseName: courseName });
+        if (!course) return next(new CustomError(`Course with the name of ${courseName} does not exist`, 404));
+
+        const lessons = await Lesson.find({ course_id: course._id });
+
+        const enrolledCourse = await Enrollment.findOne({ student: req.currentUser.id, course: course._id });
+
+        let limitedLessons
+        if (!enrolledCourse) {
+            limitedLessons = lessons.map(lesson => {
+                return ({
+                    lessonName: lesson.lessonName,
+                    description: lesson.description,
+                    duration: lesson.duration
+                })
+            })
+        } else {
+            limitedLessons = lessons
+        }
+
+        res.status(200).json(limitedLessons);
+    } catch (error) {
+        next(new CustomError(error.message, 500));
+    }
+});
+
+const getLesson = asyncHandler(async (req, res, next) => {
     try {
         const { id } = req.params;
         const lesson = await Lesson.findById(id);
@@ -102,5 +154,6 @@ module.exports = {
     updateLesson,
     getLesson,
     deleteLesson,
-    searchByLessonName
+    searchByLessonName,
+    getAllLessonsAdmin
 }

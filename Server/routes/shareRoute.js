@@ -8,7 +8,7 @@ const {
 } = require('../controllers/shareCtrl')
 const { validateToken, isStudent } = require('../middlewares/validateToken');
 
-router.get('/facebook', validateToken, shareToFacebook);
+router.get('/facebook', shareToFacebook);
 router.get('/twitter', validateToken, shareToTwitter);
 router.get('/linkedin', validateToken, shareToLinkedIn);
 

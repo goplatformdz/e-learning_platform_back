@@ -1,5 +1,6 @@
 const Course = require('../models/courseModel');
 const Category = require('../models/categoryModel');
+const Enrollment = require('../models/enrollmentModel');
 const CustomError = require('../utils/customError');
 const asyncHandler = require('express-async-handler');
 
@@ -96,7 +97,7 @@ const getCourse = asyncHandler(async (req, res, next) => {
 });
 
 
-const getCoursesByCategory = asyncHandler(async (req, res) => {
+const getCoursesByCategory = asyncHandler(async (req, res, next) => {
     try {
         const { categoryName } = req.body;
 
@@ -128,6 +129,10 @@ const deleteCourse = asyncHandler(async (req, res, next) => {
     }
 });
 
+
+
+
+
 module.exports = {
     createCourse,
     getAllCourses,
@@ -135,5 +140,6 @@ module.exports = {
     getCourse,
     deleteCourse,
     searchByCourseName,
-    getCoursesByCategory
+    getCoursesByCategory,
+
 };
