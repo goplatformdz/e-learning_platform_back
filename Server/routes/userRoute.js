@@ -7,7 +7,8 @@ const {
     getUser,
     deleteUser,
     updateUser,
-    subscribeToNewsLetter
+    subscribeToNewsLetter,
+    getRecommendedCourses,
 } = require('../controllers/userCtrl')
 const { validateToken, isAdmin, isStudent } = require('../middlewares/validateToken');
 
@@ -18,5 +19,7 @@ router.delete("/deleteUser/:id", validateToken, deleteUser);
 router.get("/all-users", validateToken, getAllUsers);
 router.get("/:id", validateToken, getUser);
 router.post('/subscribe-newsletter', validateToken, subscribeToNewsLetter);
+router.get('/recommended-courses',validateToken, getRecommendedCourses);
+
 
 module.exports = router;
