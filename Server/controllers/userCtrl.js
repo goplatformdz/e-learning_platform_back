@@ -160,4 +160,5 @@ module.exports = {
     deleteUser,
     loginUser,
     subscribeToNewsLetter,
+     getRecommendedCourses,
 };
