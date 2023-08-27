@@ -136,6 +136,21 @@ const subscribeToNewsLetter = asyncHandler(async (req, res, next) => {
         return next(new CustomError('Error subscribing to newsletter', 500));
     }
 });
+const getRecommendedCourses = async (req, res) => {
+    try {
+        const userId = req.currentUser.id
+        // Find the user by ID and populate the enrolledCourses field
+        const courseIds = await Enrollment.findOne({ student: userId });
+        if (courseIds) {
+            const courses = courseIds.course;
+            const allCourses = await Promise.all(courses.map(elem => Course.findById(elem)));
+            const categories = await Promise.all(allCourses.map(elem => Course.find({category:elem.category})));
+            res.status(200).json(categories);
+        } 
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+};
 
 module.exports = {
     registerUser,
