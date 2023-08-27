@@ -2,12 +2,11 @@ const Course = require('../models/courseModel');
 const Enrollment = require('../models/enrollmentModel');
 const asyncHandler = require('express-async-handler');
 const CustomError = require('../utils/customError');
-
+const User = require('../models/userModel')
 
 
 // Create an enrollment for a student in a course
 const enrollInCourse = asyncHandler(async (req, res, next) => {
-
     const { course_id } = req.params;
 
     try {
@@ -17,14 +16,36 @@ const enrollInCourse = asyncHandler(async (req, res, next) => {
             return next(new CustomError('Course not found', 404));
         }
 
+        const userId = req.currentUser.id
+
+        const EnrollmentUser = await Enrollment.find({student:userId})
+        if(EnrollmentUser.length===0)
+        {
+            console.log("0");
+            const enrollment = await Enrollment.create({
+                student:userId ,
+                course: course._id
+            });
+            console.log(enrollment);
+        }
+        else {
+            console.log("1");
+
+            const update = await Enrollment.findOneAndUpdate(
+                { student: userId },
+                { $addToSet: { course: course._id } },
+                { new: true }
+            );
+        }
         // Create an enrollment for the student in the course
-        const enrollment = await Enrollment.create({
-            student: req.currentUser.id,
-            course: course._id
-        })
+        
 
+        // Update the user's enrolledCourses field
+        /* await User.findByIdAndUpdate(req.currentUser.id, {
+            $addToSet: { enrolledCourses: course._id } // Add the course to the enrolledCourses array
+        });*/
 
-        res.status(200).json(enrollment);
+        res.status(200).json("sucess");
     } catch (error) {
         next(new CustomError(error.message, 500));
     }
