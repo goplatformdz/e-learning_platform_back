@@ -26,8 +26,8 @@ const validateToken = asyncHandler(async (req, res, next) => {
 })
 
 const isAdmin = asyncHandler(async (req, res, next) => {
-    const { id } = req.currentUser
     try {
+        const { id } = req.currentUser
         const user = await User.findById(id)
         if (user && user.role === "admin") return next()
         else next(new CustomError("User is not authorized", 401))
