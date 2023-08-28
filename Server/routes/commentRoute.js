@@ -2,18 +2,18 @@ const express = require('express');
 const router = express.Router();
 const {
     createComment,
-    getAllComments,
+    getCommentsByLesson,
     updateComment,
     getComment,
     deleteComment,
 } = require('../controllers/commentCtrl');
-const { validateToken, isStudent } = require('../middlewares/validateToken');
+const { validateToken } = require('../middlewares/validateToken');
 
 
-router.post("/addComment", validateToken, isStudent, createComment);
-router.put("/updateComment/:id", validateToken, isStudent, updateComment);
+router.post("/addComment/:lessonId", validateToken, createComment);
+router.put("/updateComment/:id", validateToken, updateComment);
 router.delete("/deleteComment/:id", validateToken, deleteComment);
-router.get("/all-comments", validateToken, getAllComments);
+router.get("/all-comments/:lessonId", validateToken, getCommentsByLesson);
 router.get("/:id", validateToken, getComment);
 
 module.exports = router;
