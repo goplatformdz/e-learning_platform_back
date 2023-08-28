@@ -1,11 +1,13 @@
 const Course = require('../models/courseModel');
+const User = require('../models/userModel');
 const Category = require('../models/categoryModel');
-const Enrollment = require('../models/enrollmentModel');
+const Notification = require('../models/notificationModel');
 const CustomError = require('../utils/customError');
 const asyncHandler = require('express-async-handler');
 
 const createCourse = asyncHandler(async (req, res, next) => {
     try {
+        const users = await User.find({});
         const { courseName, description, instructor, categoryName } = req.body
 
         const category = await Category.findOne({ name: categoryName })
@@ -17,9 +19,24 @@ const createCourse = asyncHandler(async (req, res, next) => {
             category: category._id
 
         });
-        res.status(200).json({ message: 'Course successfully created', data: newCourse });
+
+
+        // Create a notification for each user
+        const notifications = []
+        for (const user of users) {
+            if (user.role === 'admin') {
+                const notification = await Notification.create({
+                    user: user._id,
+                    course_id: newCourse._id,
+                    message: `Hey ${user.firstname}, check out our brand new ${category.name} course by ${newCourse.instructor}: ${newCourse.courseName}`
+                });
+                notifications.push(notification)
+            }
+        }
+
+        res.status(200).json({ message: 'Course successfully created', data: { newCourse, notifications } });
     } catch (error) {
-        next(new CustomError('Error while creating course', 500));
+        next(new CustomError(error.message, 500));
     }
 });
 
