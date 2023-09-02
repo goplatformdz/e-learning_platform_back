@@ -24,7 +24,7 @@ const createCourse = asyncHandler(async (req, res, next) => {
         // Create a notification for each user
         const notifications = []
         for (const user of users) {
-            if (user.role === 'admin') {
+            if (user.role === 'student') {
                 const notification = await Notification.create({
                     user: user._id,
                     course_id: newCourse._id,

@@ -14,7 +14,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
                 'access-token', accessToken,
                 { maxAge: 24 * 60 * 60 * 1000, }
             );
-            res.status(200).json({ message: 'User logged in successfully', data: user });
+            res.status(200).json({ message: 'User logged in successfully', data: user, token: accessToken });
         } else {
             return next(new CustomError('Invalid Credentials', 401));
         }
@@ -144,9 +144,9 @@ const getRecommendedCourses = async (req, res) => {
         if (courseIds) {
             const courses = courseIds.course;
             const allCourses = await Promise.all(courses.map(elem => Course.findById(elem)));
-            const categories = await Promise.all(allCourses.map(elem => Course.find({category:elem.category})));
+            const categories = await Promise.all(allCourses.map(elem => Course.find({ category: elem.category })));
             res.status(200).json(categories);
-        } 
+        }
     } catch (error) {
         res.status(500).json({ error });
     }
@@ -160,5 +160,5 @@ module.exports = {
     deleteUser,
     loginUser,
     subscribeToNewsLetter,
-     getRecommendedCourses,
+    getRecommendedCourses,
 };
