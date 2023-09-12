@@ -2,6 +2,7 @@ const Course = require('../models/courseModel');
 const User = require('../models/userModel');
 const Category = require('../models/categoryModel');
 const Notification = require('../models/notificationModel');
+const Enrollment = require('../models/enrollmentModel');
 const CustomError = require('../utils/customError');
 const asyncHandler = require('express-async-handler');
 
@@ -24,7 +25,7 @@ const createCourse = asyncHandler(async (req, res, next) => {
         // Create a notification for each user
         const notifications = []
         for (const user of users) {
-            if (user.role === 'admin') {
+            if (user.role === 'student') {
                 const notification = await Notification.create({
                     user: user._id,
                     course_id: newCourse._id,
@@ -147,6 +148,30 @@ const deleteCourse = asyncHandler(async (req, res, next) => {
 });
 
 
+const getRecommendedCourses = async (req, res, next) => {
+    try {
+        const numberOfRecommendations = 5; // Define the number of courses to recommend
+        // Retrieve all courses from the database
+        const courses = await Course.find();
+        // Retrieve the enrollments count for each course
+        const courseEnrollmentCounts = await Promise.all(
+            courses.map(async (course) => {
+                const enrollmentCount = await Enrollment.countDocuments({ course: course._id });
+                return { course, enrollmentCount };
+            })
+        );
+        // Sort the courses based on the enrollment counts in descending order
+        const sortedCourses = courseEnrollmentCounts.sort((a, b) => b.enrollmentCount - a.enrollmentCount);
+        // Select the top recommended courses from the sorted list
+        const recommendedCourses = sortedCourses.slice(0, numberOfRecommendations).map((item) => item.course);
+        res.status(200).json(recommendedCourses);
+    } catch (error) {
+        next(new CustomError(error.message, 500));
+    }
+};
+
+
+
 
 
 
@@ -158,5 +183,6 @@ module.exports = {
     deleteCourse,
     searchByCourseName,
     getCoursesByCategory,
+    getRecommendedCourses
 
 };

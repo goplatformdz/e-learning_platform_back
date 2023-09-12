@@ -13,6 +13,8 @@ const enrollmentRoutes = require('./routes/enrollmentRoute');
 const categoryRoutes = require('./routes/categoryRoute');
 const shareRoutes = require('./routes/shareRoute');
 const notificationRoutes = require('./routes/notificationRoute');
+const messageRoutes = require('./routes/messageRoute');
+const chatroomRoutes = require('./routes/chatroomRoute');
 const CustomError = require('./utils/customError');
 const cookieParser = require('cookie-parser')
 
@@ -29,6 +31,8 @@ app.use('/api/enrollments', enrollmentRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/share', shareRoutes)
 app.use('/api/notifications', notificationRoutes)
+app.use('/api/messages', messageRoutes)
+app.use('/api/chatrooms', chatroomRoutes)
 
 
 app.all('*', (req, res, next) => {

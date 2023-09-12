@@ -3,6 +3,9 @@ const CustomError = require('../utils/customError');
 const asyncHandler = require('express-async-handler');
 const nodemailer = require('nodemailer');
 const { generateToken } = require('../config/jwtToken');
+const { sendMail } = require('../utils/email');
+const crypto = require('crypto');
+
 
 const loginUser = asyncHandler(async (req, res, next) => {
     const { email, password } = req.body;
@@ -14,7 +17,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
                 'access-token', accessToken,
                 { maxAge: 24 * 60 * 60 * 1000, }
             );
-            res.status(200).json({ message: 'User logged in successfully', data: user });
+            res.status(200).json({ message: 'User logged in successfully', data: user, token: accessToken });
         } else {
             return next(new CustomError('Invalid Credentials', 401));
         }
@@ -32,7 +35,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
                 const newUser = await User.create(req.body);
                 res.status(200).json({ message: 'User successfully registered', data: newUser });
             } catch (error) {
-                return next(new CustomError('Registration Failed: Database Error', 500));
+                return next(new CustomError(error.message, 500));
             }
         } else {
             return next(new CustomError('User with the same email is already registered', 400));
@@ -41,6 +44,69 @@ const registerUser = asyncHandler(async (req, res, next) => {
         return next(new CustomError('Error during registration process', 500));
     }
 });
+
+const forgotPassword = asyncHandler(async (req, res, next) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (user) {
+
+            const resetToken = user.createPasswordResetToken()
+            await user.save({ validateBeforeSave: false })
+
+            const resetUrl = `${req.protocol}://${req.get('host')}/api/users/resetPassword/${resetToken}`;
+            const text = `We have received a  password reset request, please click in the link below to reset your password\n\n ${resetUrl}\n\nNote: this link will expire in 5 minutes`;
+
+
+            try {
+                await sendMail({
+                    to: user.email,
+                    subject: 'Password change request received',
+                    text,
+
+                })
+                res.status(200).json({ message: 'password reset link sent to user email' })
+            } catch (err) {
+                user.passwordResetToken = undefined
+                user.passwordResetTokenExpires = undefined
+                await user.save({ validateBeforeSave: false })
+
+                return next(new CustomError('Error sending reset password', 500));
+            }
+
+
+        } else {
+            return next(new CustomError('Email Not found', 404));
+        }
+    } catch (err) {
+        return next(new CustomError(err, 500));
+    }
+});
+
+const resetPassword = asyncHandler(async (req, res, next) => {
+    try {
+        const token = crypto.createHash('sha256').update(req.params.token).digest('hex')
+        const user = await User.findOne({ passwordResetToken: token, passwordResetTokenExpires: { $gt: Date.now() } });
+        if (!user) {
+            return next(new CustomError(`User not found`, 404));
+        }
+
+        user.password = req.body.password;
+        user.resetToken = undefined;
+        user.passwordResetTokenExpires = undefined
+
+        user.save();
+        const accessToken = generateToken(user);
+        res.cookie(
+            'access-token', accessToken,
+            { maxAge: 24 * 60 * 60 * 1000, }
+        );
+        res.status(200).json({ message: 'User logged in successfully', data: user, token: accessToken });
+    } catch (error) {
+        return next(new CustomError('Token is invalid or has expired', 500));
+    }
+});
+
 
 const updateUser = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
@@ -103,27 +169,17 @@ const deleteUser = asyncHandler(async (req, res, next) => {
 
 const sendNewsletterConfirmationEmail = asyncHandler(async (email, next) => {
     try {
-        const transporter = nodemailer.createTransport({
-            // Configure your email service here
-            service: 'Gmail', // Change to your email service provider
-            auth: {
-                user: 'managerplatfrome@gmail.com', // Your email address
-                pass: process.env.PASSWORD_ADMIN,   // Your email password or app-specific password
-            },
-        });
-
-        const mailOptions = {
-            from: 'managerplatfrome@gmail.com', // Sender address
-            to: email,                      // Recipient address (user's email)
+        await sendMail({
+            to: email,
             subject: 'Newsletter Subscription Confirmation',
             text: 'Thank you for subscribing to our newsletter!',
             html: '<p>Thank you for subscribing to our newsletter!</p>',
-        };
-
-        await transporter.sendMail(mailOptions);
+        })
+        res.status(200).json({ message: 'password reset link sent to user email' })
     } catch (error) {
         next(new CustomError('An error occurred while sending the confirmation email', 500));
     }
+
 });
 
 const subscribeToNewsLetter = asyncHandler(async (req, res, next) => {
@@ -136,21 +192,7 @@ const subscribeToNewsLetter = asyncHandler(async (req, res, next) => {
         return next(new CustomError('Error subscribing to newsletter', 500));
     }
 });
-const getRecommendedCourses = async (req, res) => {
-    try {
-        const userId = req.currentUser.id
-        // Find the user by ID and populate the enrolledCourses field
-        const courseIds = await Enrollment.findOne({ student: userId });
-        if (courseIds) {
-            const courses = courseIds.course;
-            const allCourses = await Promise.all(courses.map(elem => Course.findById(elem)));
-            const categories = await Promise.all(allCourses.map(elem => Course.find({category:elem.category})));
-            res.status(200).json(categories);
-        } 
-    } catch (error) {
-        res.status(500).json({ error });
-    }
-};
+
 
 module.exports = {
     registerUser,
@@ -160,5 +202,6 @@ module.exports = {
     deleteUser,
     loginUser,
     subscribeToNewsLetter,
-     getRecommendedCourses,
+    forgotPassword,
+    resetPassword
 };
