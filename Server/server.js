@@ -20,7 +20,11 @@ const cookieParser = require('cookie-parser')
 
 dbConnect()
 app.use(express.json());
-app.use(cors());
+const corsOptions = {
+    origin: 'http://localhost:8080',
+    credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use('/api/users', usersRoutes)
