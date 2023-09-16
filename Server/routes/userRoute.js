@@ -10,6 +10,7 @@ const {
     subscribeToNewsLetter,
     forgotPassword,
     resetPassword,
+    getCurrentUser
 } = require('../controllers/userCtrl')
 const { validateToken, isAdmin, isStudent } = require('../middlewares/validateToken');
 
@@ -18,6 +19,7 @@ router.post("/loginUser", loginUser);
 router.put("/updateUser/:id", validateToken, updateUser);
 router.delete("/deleteUser/:id", validateToken, deleteUser);
 router.get("/all-users", validateToken, isAdmin, getAllUsers);
+router.get("/getCurrentUser", validateToken, getCurrentUser);
 router.get("/:id", validateToken, isAdmin, getUser);
 router.post('/subscribe-newsletter', subscribeToNewsLetter);
 router.post('/forgotPassword', forgotPassword);

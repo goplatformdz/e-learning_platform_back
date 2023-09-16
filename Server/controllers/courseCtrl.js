@@ -123,7 +123,7 @@ const getCoursesByCategory = asyncHandler(async (req, res, next) => {
         const category = await Category.findOne({ name: categoryName });
         if (!category) return next(new CustomError(`Category with the name of ${categoryName} does not exist`, 404));
 
-        const courses = await Course.find({ category: category._id });
+        const courses = await Course.find({ category: category._id }).populate('category');
 
         res.status(200).json(courses);
     } catch (error) {

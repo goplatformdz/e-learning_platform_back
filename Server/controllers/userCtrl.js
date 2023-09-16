@@ -5,7 +5,7 @@ const nodemailer = require('nodemailer');
 const { generateToken } = require('../config/jwtToken');
 const { sendMail } = require('../utils/email');
 const crypto = require('crypto');
-
+const { ObjectId } = require('mongodb');
 
 const loginUser = asyncHandler(async (req, res, next) => {
     const { email, password } = req.body;
@@ -15,7 +15,10 @@ const loginUser = asyncHandler(async (req, res, next) => {
             const accessToken = generateToken(user);
             res.cookie(
                 'access-token', accessToken,
-                { maxAge: 24 * 60 * 60 * 1000, }
+                {
+                    maxAge: 24 * 60 * 60 * 1000,
+                    httpOnly: true
+                }
             );
             res.status(200).json({ message: 'User logged in successfully', data: user, token: accessToken });
         } else {
@@ -108,6 +111,8 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 });
 
 
+
+
 const updateUser = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
     try {
@@ -142,6 +147,8 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
 });
 
 const getUser = asyncHandler(async (req, res, next) => {
+    console.log({ user: req.currentUser.id })
+
     try {
         const { id } = req.params;
         const user = await User.findById(id);
@@ -150,7 +157,7 @@ const getUser = asyncHandler(async (req, res, next) => {
         }
         res.status(200).json(user);
     } catch (error) {
-        return next(new CustomError('Error while fetching user', 500));
+        return next(new CustomError(error.message, 500));
     }
 });
 
@@ -193,6 +200,24 @@ const subscribeToNewsLetter = asyncHandler(async (req, res, next) => {
     }
 });
 
+const getCurrentUser = asyncHandler(async (req, res, next) => {
+    console.log({ user: req.currentUser.id })
+
+    const objectId = new ObjectId(req.currentUser.id)
+
+    try {
+        const user = await User.findById(objectId);
+        if (!user) {
+            return next(new CustomError('No user is currently logged-in', 400));
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        return next(new CustomError(error.message, 500));
+
+    }
+
+})
+
 
 module.exports = {
     registerUser,
@@ -203,5 +228,6 @@ module.exports = {
     loginUser,
     subscribeToNewsLetter,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    getCurrentUser
 };
