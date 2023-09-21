@@ -17,6 +17,10 @@ const lessonSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    watched: {
+        type: Boolean,
+        default: false
+    },
     course_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course',

@@ -13,7 +13,7 @@ const { validateToken } = require('../middlewares/validateToken');
 router.post("/addComment/:lessonId", validateToken, createComment);
 router.put("/updateComment/:id", validateToken, updateComment);
 router.delete("/deleteComment/:id", validateToken, deleteComment);
-router.get("/all-comments/:lessonId", validateToken, getCommentsByLesson);
+router.get("/all-comments/:lessonId", getCommentsByLesson);
 router.get("/:id", validateToken, getComment);
 
 module.exports = router;

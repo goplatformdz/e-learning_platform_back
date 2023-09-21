@@ -22,7 +22,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
             );
             res.status(200).json({ message: 'User logged in successfully', data: user, token: accessToken });
         } else {
-            return next(new CustomError('Invalid Credentials', 401));
+            return next(new CustomError('Invalid Credentials', 402));
         }
     } catch (err) {
         return next(new CustomError('Error while logging in', 500));
@@ -36,7 +36,15 @@ const registerUser = asyncHandler(async (req, res, next) => {
         if (!findUser) {
             try {
                 const newUser = await User.create(req.body);
-                res.status(200).json({ message: 'User successfully registered', data: newUser });
+                const accessToken = generateToken(newUser);
+                res.cookie(
+                    'access-token', accessToken,
+                    {
+                        maxAge: 24 * 60 * 60 * 1000,
+                        httpOnly: true
+                    }
+                );
+                res.status(200).json({ message: 'User successfully registered', data: newUser, token: accessToken });
             } catch (error) {
                 return next(new CustomError(error.message, 500));
             }
@@ -44,7 +52,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
             return next(new CustomError('User with the same email is already registered', 400));
         }
     } catch (error) {
-        return next(new CustomError('Error during registration process', 500));
+        return next(new CustomError(error.message, 500));
     }
 });
 
@@ -201,7 +209,6 @@ const subscribeToNewsLetter = asyncHandler(async (req, res, next) => {
 });
 
 const getCurrentUser = asyncHandler(async (req, res, next) => {
-    console.log({ user: req.currentUser.id })
 
     const objectId = new ObjectId(req.currentUser.id)
 
