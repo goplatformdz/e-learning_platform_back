@@ -29,6 +29,18 @@ const loginUser = asyncHandler(async (req, res, next) => {
     }
 });
 
+const logoutUser = asyncHandler(async (req, res, next) => {
+    const objectId = new ObjectId(req.currentUser.id)
+
+    try {
+        const user = await User.findById(objectId);
+        res.clearCookie('access-token'); // Clear the access token cookie
+        res.status(200).json({ message: 'User logged out successfully', user });
+    } catch (error) {
+        return next(new CustomError('Error during logout process', 500));
+    }
+});
+
 const registerUser = asyncHandler(async (req, res, next) => {
     try {
         const { email } = req.body;
@@ -236,5 +248,6 @@ module.exports = {
     subscribeToNewsLetter,
     forgotPassword,
     resetPassword,
-    getCurrentUser
+    getCurrentUser,
+    logoutUser
 };

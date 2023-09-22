@@ -19,7 +19,7 @@ router.put("/updateCourse/:id", validateToken, isAdmin, updateCourse);
 router.delete("/deleteCourse/:id", validateToken, isAdmin, deleteCourse);
 router.get("/all-courses", getAllCourses);
 router.post('/search_course', searchByCourseName);
-router.get("/getCourse/:id", validateToken, isAdmin, getCourse);
+router.get("/getCourse/:id", getCourse);
 router.post("/coursesByCategory", getCoursesByCategory);
 router.get('/recommended-courses', validateToken, getRecommendedCourses);
 

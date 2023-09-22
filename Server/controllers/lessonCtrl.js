@@ -70,14 +70,15 @@ const getAllLessonsAdmin = asyncHandler(async (req, res, next) => {
 });
 
 const getAllLessons = asyncHandler(async (req, res, next) => {
+
     try {
-        const { courseName } = req.body;
 
 
-        const course = await Course.findOne({ courseName: courseName });
-        if (!course) return next(new CustomError(`Course with the name of ${courseName} does not exist`, 404));
+        const { id } = req.params;
+        const course = await Course.findById(id);
 
-        const lessons = await Lesson.find({ course_id: course._id });
+
+        const lessons = await Lesson.find({ course_id: id }).populate('course_id');
 
         const enrolledCourse = await Enrollment.findOne({ student: req.currentUser.id, course: course._id });
 
