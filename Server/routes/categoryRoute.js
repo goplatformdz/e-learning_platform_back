@@ -16,6 +16,6 @@ router.put("/updateCategory/:id", validateToken, isAdmin, updateCategory);
 router.delete("/deleteCategory/:id", validateToken, isAdmin, deleteCategory);
 router.get("/all-categories", getAllCategories);
 router.get('/search_category', validateToken, searchByCategoryName);
-router.get("/:id", validateToken, isAdmin, getCategory);
+router.get("getcategory/:id", getCategory);
 
 module.exports = router;

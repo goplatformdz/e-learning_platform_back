@@ -73,32 +73,23 @@ const getAllLessons = asyncHandler(async (req, res, next) => {
     try {
         const { courseName } = req.body;
 
-
         const course = await Course.findOne({ courseName: courseName });
         if (!course) return next(new CustomError(`Course with the name of ${courseName} does not exist`, 404));
 
         const lessons = await Lesson.find({ course_id: course._id });
 
-        const enrolledCourse = await Enrollment.findOne({ student: req.currentUser.id, course: course._id });
-
-        let limitedLessons
-        if (!enrolledCourse) {
-            limitedLessons = lessons.map(lesson => {
-                return ({
-                    lessonName: lesson.lessonName,
-                    description: lesson.description,
-                    duration: lesson.duration
-                })
-            })
-        } else {
-            limitedLessons = lessons
-        }
+        const limitedLessons = lessons.map(lesson => ({
+            lessonName: lesson.lessonName,
+            description: lesson.description,
+            duration: lesson.duration
+        }));
 
         res.status(200).json(limitedLessons);
     } catch (error) {
         next(new CustomError(error.message, 500));
     }
 });
+
 
 const getLesson = asyncHandler(async (req, res, next) => {
     try {
