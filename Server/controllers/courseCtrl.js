@@ -81,7 +81,7 @@ const searchByCourseName = asyncHandler(async (req, res, next) => {
 
         const regex = new RegExp(courseName, 'i'); // 'i' flag for case-insensitive search
 
-        const result = await Course.find({ courseName: regex });
+        const result = await Course.find({ courseName: regex }).populate('category');
 
         res.status(200).json({ success: true, result });
     } catch (error) {
