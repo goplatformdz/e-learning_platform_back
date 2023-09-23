@@ -14,7 +14,7 @@ const { validateToken, isAdmin, isStudent } = require('../middlewares/validateTo
 router.post("/addLesson", validateToken, isAdmin, createLesson);
 router.put("/updateLesson/:id", validateToken, isAdmin, updateLesson);
 router.delete("/deleteLesson/:id", validateToken, isAdmin, deleteLesson);
-router.post("/all-lessons/",  getAllLessons);
+router.get("/all-lessons/:id", validateToken, getAllLessons);
 router.get("/all-lessons/admin", validateToken, isAdmin, getAllLessonsAdmin);
 router.get('/search_lesson', validateToken, searchByLessonName);
 router.get("/:id", validateToken, isAdmin, getLesson);

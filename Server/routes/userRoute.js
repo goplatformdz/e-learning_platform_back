@@ -3,6 +3,7 @@ const router = express.Router();
 const {
     registerUser,
     loginUser,
+    logoutUser,
     getAllUsers,
     getUser,
     deleteUser,
@@ -16,6 +17,7 @@ const { validateToken, isAdmin, isStudent } = require('../middlewares/validateTo
 
 router.post("/registerUser", registerUser);
 router.post("/loginUser", loginUser);
+router.post("/logoutUser",logoutUser);
 router.put("/updateUser/:id", validateToken, updateUser);
 router.delete("/deleteUser/:id", validateToken, deleteUser);
 router.get("/all-users", validateToken, isAdmin, getAllUsers);
