@@ -11,13 +11,16 @@ const {
     subscribeToNewsLetter,
     forgotPassword,
     resetPassword,
-    getCurrentUser
+    getCurrentUser,
+    logoutUser
 } = require('../controllers/userCtrl')
 const { validateToken, isAdmin, isStudent } = require('../middlewares/validateToken');
 
 router.post("/registerUser", registerUser);
 router.post("/loginUser", loginUser);
-router.post("/logoutUser",logoutUser);
+
+router.get("/logoutUser", validateToken, logoutUser);
+
 router.put("/updateUser/:id", validateToken, updateUser);
 router.delete("/deleteUser/:id", validateToken, deleteUser);
 router.get("/all-users", validateToken, isAdmin, getAllUsers);

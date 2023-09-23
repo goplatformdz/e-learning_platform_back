@@ -70,11 +70,18 @@ const getAllLessonsAdmin = asyncHandler(async (req, res, next) => {
 });
 
 const getAllLessons = asyncHandler(async (req, res, next) => {
+
     try {
+
+
+
         const { id } = req.params;
         const course = await Course.findById(id);
-        const category = await Course.findById(id).populate('category')
+
+
         const lessons = await Lesson.find({ course_id: id }).populate('course_id');
+
+
         const enrolledCourse = await Enrollment.findOne({ student: req.currentUser.id, course: course._id });
         let limitedLessons
         if (!enrolledCourse) {
