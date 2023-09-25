@@ -6,6 +6,8 @@ const { generateToken } = require('../config/jwtToken');
 const { sendMail } = require('../utils/email');
 const crypto = require('crypto');
 const { ObjectId } = require('mongodb');
+const jwt = require('jsonwebtoken');
+
 
 const loginUser = asyncHandler(async (req, res, next) => {
     const { email, password } = req.body;
@@ -167,7 +169,6 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
 });
 
 const getUser = asyncHandler(async (req, res, next) => {
-    console.log({ user: req.currentUser.id })
 
     try {
         const { id } = req.params;
@@ -237,6 +238,29 @@ const getCurrentUser = asyncHandler(async (req, res, next) => {
 
 })
 
+const checkLogin = asyncHandler(async (req, res, next) => {
+    try {
+        if (req.cookies["access-token"]) {
+            // Token exists, attempt to decode it
+            const accessToken = req.cookies["access-token"];
+            const decoded = await jwt.verify(accessToken, process.env.SECRET_KEY);
+
+            // If decoding succeeds, user is logged in
+            if (decoded.id) {
+                // const objectId = new ObjectId(decoded.id);
+                const user = await User.findById(decoded.id);
+                return res.status(200).json({ isLoggedIn: true, user: user });
+            }
+        }
+
+        // No token or decoding failed, user is not logged in
+        return res.status(200).json({ isLoggedIn: false });
+    } catch (error) {
+        return next(new CustomError(error.message, 500));
+    }
+});
+
+
 
 module.exports = {
     registerUser,
@@ -249,5 +273,6 @@ module.exports = {
     forgotPassword,
     resetPassword,
     getCurrentUser,
-    logoutUser
+    logoutUser,
+    checkLogin
 };

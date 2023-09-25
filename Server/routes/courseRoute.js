@@ -21,7 +21,7 @@ router.get("/all-courses", getAllCourses);
 router.post('/search_course', searchByCourseName);
 router.get("/getCourse/:id", getCourse);
 router.post("/coursesByCategory", getCoursesByCategory);
-router.get('/recommended-courses', validateToken, getRecommendedCourses);
+router.get('/recommended-courses', getRecommendedCourses);
 
 
 

@@ -69,6 +69,31 @@ const getAllLessonsAdmin = asyncHandler(async (req, res, next) => {
     }
 });
 
+const getAllLessonsNotLogged = asyncHandler(async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const course = await Course.findById(id);
+
+        if (!course) return next(new CustomError(`Course with the name of ${courseName} does not exist`, 404));
+
+        const lessons = await Lesson.find({ course_id: id }).populate('course_id');
+
+        const limitedLessons = lessons.map(lesson => {
+            return ({
+                lessonName: lesson.lessonName,
+                description: lesson.description,
+                duration: lesson.duration,
+                course_id: course,
+            })
+        })
+
+
+        res.status(200).json(limitedLessons);
+    } catch (error) {
+        next(new CustomError(error.message, 500));
+    }
+});
+
 const getAllLessons = asyncHandler(async (req, res, next) => {
 
     try {
@@ -88,7 +113,8 @@ const getAllLessons = asyncHandler(async (req, res, next) => {
                 return ({
                     lessonName: lesson.lessonName,
                     description: lesson.description,
-                    duration: lesson.duration
+                    duration: lesson.duration,
+                    course_id: course,
                 })
             })
         } else {
@@ -156,5 +182,6 @@ module.exports = {
     getLesson,
     deleteLesson,
     searchByLessonName,
-    getAllLessonsAdmin
+    getAllLessonsAdmin,
+    getAllLessonsNotLogged
 }
