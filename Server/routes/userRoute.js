@@ -10,9 +10,9 @@ const {
     subscribeToNewsLetter,
     forgotPassword,
     resetPassword,
-    getCurrentUser,
     logoutUser,
-    checkLogin
+    checkLogin,
+    updateStatus
 } = require('../controllers/userCtrl');
 const { validateToken, isAdmin, isStudent } = require('../middlewares/validateToken');
 
@@ -29,9 +29,9 @@ router.use(validateToken); // Middleware for authentication
 
 router.get("/logoutUser", logoutUser);
 router.put("/updateUser/:id", updateUser);
+router.put("/updateStatus/:id", isAdmin, updateStatus);
 router.delete("/deleteUser/:id", deleteUser);
 router.get("/all-users", isAdmin, getAllUsers);
-router.get("/getCurrentUser", getCurrentUser);
 router.get("/:id", isAdmin, getUser);
 
 module.exports = router;

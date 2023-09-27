@@ -133,6 +133,27 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 });
 
 
+const updateStatus = asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
+    const { status } = req.body; // Extract the new status from the request body
+
+    try {
+        const user = await User.findByIdAndUpdate(
+            id,
+            { status: status }, // Update only the status field
+            { new: true }
+        );
+
+        if (!user) {
+            return next(new CustomError(`User with ID ${id} not found`, 404));
+        }
+
+        res.status(200).json({ message: 'Status updated successfully', data: user });
+    } catch (error) {
+        return next(new CustomError('Error during status update process', 500));
+    }
+});
+
 
 
 const updateUser = asyncHandler(async (req, res, next) => {
@@ -144,6 +165,7 @@ const updateUser = asyncHandler(async (req, res, next) => {
                 firstname: req?.body?.firstname,
                 lastname: req?.body?.lastname,
                 email: req?.body?.email,
+                phoneNumber: req?.body?.phoneNumber,
                 password: req?.body?.password,
             },
             {
@@ -221,22 +243,6 @@ const subscribeToNewsLetter = asyncHandler(async (req, res, next) => {
     }
 });
 
-const getCurrentUser = asyncHandler(async (req, res, next) => {
-
-    const objectId = new ObjectId(req.currentUser.id)
-
-    try {
-        const user = await User.findById(objectId);
-        if (!user) {
-            return next(new CustomError('No user is currently logged-in', 400));
-        }
-        res.status(200).json(user);
-    } catch (error) {
-        return next(new CustomError(error.message, 500));
-
-    }
-
-})
 
 const checkLogin = asyncHandler(async (req, res, next) => {
     try {
@@ -272,7 +278,7 @@ module.exports = {
     subscribeToNewsLetter,
     forgotPassword,
     resetPassword,
-    getCurrentUser,
     logoutUser,
-    checkLogin
+    checkLogin,
+    updateStatus
 };

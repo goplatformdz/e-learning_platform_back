@@ -15,6 +15,7 @@ const shareRoutes = require('./routes/shareRoute');
 const notificationRoutes = require('./routes/notificationRoute');
 const messageRoutes = require('./routes/messageRoute');
 const chatroomRoutes = require('./routes/chatroomRoute');
+const blogRoutes = require('./routes/blogRoute');
 const CustomError = require('./utils/customError');
 const cookieParser = require('cookie-parser')
 
@@ -37,6 +38,7 @@ app.use('/api/share', shareRoutes)
 app.use('/api/notifications', notificationRoutes)
 app.use('/api/messages', messageRoutes)
 app.use('/api/chatrooms', chatroomRoutes)
+app.use('/api/blog', blogRoutes)
 
 
 app.all('*', (req, res, next) => {

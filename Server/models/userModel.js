@@ -19,11 +19,16 @@ const userSchema = mongoose.Schema({
     lowercase: true,
     validate: [validator.isEmail, 'Please enter a valid email address']
   },
+  phoneNumber: {
+    type: String,
+    required: true,
+  },
   password: {
     type: String,
     required: true,
     minlength: 8
   },
+
   confirmPassword: {
     type: String,
     required: true,
@@ -39,6 +44,11 @@ const userSchema = mongoose.Schema({
     enum: ['student', 'admin'],
     default: 'student',
     required: true
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'active'],
+    default: 'pending',
   },
   passwordChangedAt: Date,
   passwordResetToken: String,

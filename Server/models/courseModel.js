@@ -18,7 +18,8 @@ const courseSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
         required: true
-    }
+    },
+
 });
 
 const Course = mongoose.model('Course', courseSchema);
