@@ -12,7 +12,7 @@ const {
     forgotPassword,
     resetPassword,
     getCurrentUser,
-    logoutUser
+   
 } = require('../controllers/userCtrl')
 const { validateToken, isAdmin, isStudent } = require('../middlewares/validateToken');
 

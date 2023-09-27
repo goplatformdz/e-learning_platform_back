@@ -68,14 +68,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
         return next(new CustomError(error.message, 500));
     }
 }); 
-const logoutUser = asyncHandler(async (req, res, next) => {
-    try {
-        res.clearCookie('access-token'); // Clear the access token cookie
-        res.status(200).json({ message: 'User logged out successfully' });
-    } catch (error) {
-        return next(new CustomError('Error during logout process', 500));
-    }
-});
+
 
 const forgotPassword = asyncHandler(async (req, res, next) => {
     const { email } = req.body;
@@ -259,5 +252,4 @@ module.exports = {
     forgotPassword,
     resetPassword,
     getCurrentUser,
-    logoutUser
 };

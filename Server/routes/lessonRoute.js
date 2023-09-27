@@ -11,8 +11,8 @@ const {
 } = require('../controllers/lessonCtrl')
 const { validateToken, isAdmin, isStudent } = require('../middlewares/validateToken')
 
-router.post("/addLesson", validateToken, isAdmin, createLesson);
-router.put("/updateLesson/:id", validateToken, isAdmin, updateLesson);
+router.post("/addLesson", createLesson);
+router.put("/updateLesson/:id", validateToken, updateLesson);
 router.delete("/deleteLesson/:id", validateToken, isAdmin, deleteLesson);
 router.get("/all-lessons/:id", validateToken, getAllLessons);
 router.get("/all-lessons/admin", validateToken, isAdmin, getAllLessonsAdmin);

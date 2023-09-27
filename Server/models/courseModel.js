@@ -18,6 +18,12 @@ const courseSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
         required: true
+    },
+    photo1 : {
+        type : String,
+    },
+    photo2 : {
+        type : String,
     }
 });
 
