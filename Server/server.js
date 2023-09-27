@@ -18,6 +18,7 @@ const chatroomRoutes = require('./routes/chatroomRoute');
 const blogRoutes = require('./routes/blogRoute');
 const CustomError = require('./utils/customError');
 const cookieParser = require('cookie-parser')
+const fileUpload = require('express-fileupload');
 
 dbConnect()
 app.use(express.json());
@@ -28,6 +29,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(fileUpload());
+app.use(express.static('public'));
+
 app.use('/api/users', usersRoutes)
 app.use('/api/courses', courseRoutes)
 app.use('/api/lessons', lessonRoutes)

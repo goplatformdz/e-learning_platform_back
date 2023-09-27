@@ -20,6 +20,13 @@ const courseSchema = mongoose.Schema({
         required: true
     },
 
+    photo1 : {
+        type : String,
+    },
+    photo2 : {
+        type : String,
+    }
+
 });
 
 const Course = mongoose.model('Course', courseSchema);

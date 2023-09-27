@@ -3,6 +3,7 @@ const router = express.Router();
 const {
     registerUser,
     loginUser,
+    logoutUser,
     getAllUsers,
     getUser,
     deleteUser,
@@ -10,16 +11,19 @@ const {
     subscribeToNewsLetter,
     forgotPassword,
     resetPassword,
+
     logoutUser,
     checkLogin,
     updateStatus
 } = require('../controllers/userCtrl');
+
 const { validateToken, isAdmin, isStudent } = require('../middlewares/validateToken');
 
 // Public Routes
 router.get("/checkLogin", checkLogin);
 router.post("/registerUser", registerUser);
 router.post("/loginUser", loginUser);
+
 router.post('/subscribe-newsletter', subscribeToNewsLetter);
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);

@@ -14,11 +14,13 @@ const {
 const { validateToken, isAdmin } = require('../middlewares/validateToken');
 
 
-router.post("/addCourse", validateToken, isAdmin, createCourse);
-router.put("/updateCourse/:id", validateToken, isAdmin, updateCourse);
+router.post("/addCourse",validateToken, createCourse);
+router.put("/updateCourse/:id", validateToken, updateCourse);
 router.delete("/deleteCourse/:id", validateToken, isAdmin, deleteCourse);
 router.get("/all-courses", getAllCourses);
+
 router.post('/search_course', searchByCourseName);
+
 router.get("/getCourse/:id", getCourse);
 router.post("/coursesByCategory", getCoursesByCategory);
 router.get('/recommended-courses', getRecommendedCourses);

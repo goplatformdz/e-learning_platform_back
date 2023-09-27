@@ -6,7 +6,11 @@ const { generateToken } = require('../config/jwtToken');
 const { sendMail } = require('../utils/email');
 const crypto = require('crypto');
 const { ObjectId } = require('mongodb');
+
 const jwt = require('jsonwebtoken');
+
+
+const { log } = require('console');
 
 
 const loginUser = asyncHandler(async (req, res, next) => {
@@ -68,7 +72,8 @@ const registerUser = asyncHandler(async (req, res, next) => {
     } catch (error) {
         return next(new CustomError(error.message, 500));
     }
-});
+}); 
+
 
 const forgotPassword = asyncHandler(async (req, res, next) => {
     const { email } = req.body;
@@ -225,7 +230,6 @@ const sendNewsletterConfirmationEmail = asyncHandler(async (email, next) => {
             text: 'Thank you for subscribing to our newsletter!',
             html: '<p>Thank you for subscribing to our newsletter!</p>',
         })
-        res.status(200).json({ message: 'password reset link sent to user email' })
     } catch (error) {
         next(new CustomError('An error occurred while sending the confirmation email', 500));
     }
@@ -236,6 +240,7 @@ const subscribeToNewsLetter = asyncHandler(async (req, res, next) => {
     try {
         const { email } = req.body;
         await sendNewsletterConfirmationEmail(email, next);
+
         // Respond to the client
         res.status(200).json({ message: 'Newsletter subscription confirmation sent!' });
     } catch (error) {
@@ -275,10 +280,15 @@ module.exports = {
     getUser,
     deleteUser,
     loginUser,
+    logoutUser,
     subscribeToNewsLetter,
     forgotPassword,
     resetPassword,
+
     logoutUser,
     checkLogin,
     updateStatus
+
+    getCurrentUser,
+
 };

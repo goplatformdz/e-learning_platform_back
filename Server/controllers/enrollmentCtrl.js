@@ -8,7 +8,7 @@ const User = require('../models/userModel')
 // Create an enrollment for a student in a course
 const enrollInCourse = asyncHandler(async (req, res, next) => {
     const { course_id } = req.params;
-
+    console.log(course_id);
     try {
         // Find the course by its ID
         const course = await Course.findById(course_id);
@@ -44,7 +44,9 @@ const enrollInCourse = asyncHandler(async (req, res, next) => {
             $addToSet: { enrolledCourses: course._id } // Add the course to the enrolledCourses array
         });*/
 
+
         res.status(200).json({ message: "success", enrollement: update });
+
     } catch (error) {
         next(new CustomError(error.message, 500));
     }

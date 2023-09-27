@@ -99,33 +99,37 @@ const getAllLessons = asyncHandler(async (req, res, next) => {
     try {
 
 
+
         const { id } = req.params;
         const course = await Course.findById(id);
 
 
         const lessons = await Lesson.find({ course_id: id }).populate('course_id');
 
-        const enrolledCourse = await Enrollment.findOne({ student: req.currentUser.id, course: course._id });
 
+        const enrolledCourse = await Enrollment.findOne({ student: req.currentUser.id, course: course._id });
         let limitedLessons
         if (!enrolledCourse) {
             limitedLessons = lessons.map(lesson => {
                 return ({
                     lessonName: lesson.lessonName,
+                    id: lesson._id,
                     description: lesson.description,
                     duration: lesson.duration,
+
                     course_id: course,
+
                 })
             })
         } else {
             limitedLessons = lessons
         }
-
         res.status(200).json(limitedLessons);
     } catch (error) {
         next(new CustomError(error.message, 500));
     }
 });
+
 
 const getLesson = asyncHandler(async (req, res, next) => {
     try {
