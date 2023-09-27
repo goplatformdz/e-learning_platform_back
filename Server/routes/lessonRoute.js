@@ -7,7 +7,8 @@ const {
     getLesson,
     deleteLesson,
     searchByLessonName,
-    getAllLessonsAdmin
+    getAllLessonsAdmin,
+    getAllLessonsNotLogged
 } = require('../controllers/lessonCtrl')
 const { validateToken, isAdmin, isStudent } = require('../middlewares/validateToken')
 
@@ -15,8 +16,9 @@ router.post("/addLesson", createLesson);
 router.put("/updateLesson/:id", validateToken, updateLesson);
 router.delete("/deleteLesson/:id", validateToken, isAdmin, deleteLesson);
 router.get("/all-lessons/:id", validateToken, getAllLessons);
+router.get("/all-lessons-default/:id", getAllLessonsNotLogged);
 router.get("/all-lessons/admin", validateToken, isAdmin, getAllLessonsAdmin);
-router.get('/search_lesson', validateToken, searchByLessonName);
+router.get('/search_lesson', searchByLessonName);
 router.get("/:id", validateToken, isAdmin, getLesson);
 
 module.exports = router;

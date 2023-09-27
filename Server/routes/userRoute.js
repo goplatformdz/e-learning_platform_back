@@ -11,24 +11,31 @@ const {
     subscribeToNewsLetter,
     forgotPassword,
     resetPassword,
-    getCurrentUser,
-   
-} = require('../controllers/userCtrl')
+
+    logoutUser,
+    checkLogin,
+    updateStatus
+} = require('../controllers/userCtrl');
+
 const { validateToken, isAdmin, isStudent } = require('../middlewares/validateToken');
 
+// Public Routes
+router.get("/checkLogin", checkLogin);
 router.post("/registerUser", registerUser);
 router.post("/loginUser", loginUser);
 
-router.get("/logoutUser", validateToken, logoutUser);
-
-router.put("/updateUser/:id", validateToken, updateUser);
-router.delete("/deleteUser/:id", validateToken, deleteUser);
-router.get("/all-users", validateToken, isAdmin, getAllUsers);
-router.get("/getCurrentUser", validateToken, getCurrentUser);
-router.get("/:id", validateToken, isAdmin, getUser);
 router.post('/subscribe-newsletter', subscribeToNewsLetter);
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
 
+// Protected Routes (Require Authentication)
+router.use(validateToken); // Middleware for authentication
+
+router.get("/logoutUser", logoutUser);
+router.put("/updateUser/:id", updateUser);
+router.put("/updateStatus/:id", isAdmin, updateStatus);
+router.delete("/deleteUser/:id", deleteUser);
+router.get("/all-users", isAdmin, getAllUsers);
+router.get("/:id", isAdmin, getUser);
 
 module.exports = router;

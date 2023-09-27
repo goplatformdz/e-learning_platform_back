@@ -19,12 +19,14 @@ const courseSchema = mongoose.Schema({
         ref: 'Category',
         required: true
     },
+
     photo1 : {
         type : String,
     },
     photo2 : {
         type : String,
     }
+
 });
 
 const Course = mongoose.model('Course', courseSchema);

@@ -18,34 +18,35 @@ const enrollInCourse = asyncHandler(async (req, res, next) => {
 
         const userId = req.currentUser.id
 
-        const EnrollmentUser = await Enrollment.find({student:userId})
-        if(EnrollmentUser.length===0)
-        {
+        const EnrollmentUser = await Enrollment.find({ student: userId })
+        if (EnrollmentUser.length === 0) {
             console.log("0");
             const enrollment = await Enrollment.create({
-                student:userId ,
+                student: userId,
                 course: course._id
             });
             console.log(enrollment);
         }
-        else {
-            console.log("1");
 
-            const update = await Enrollment.findOneAndUpdate(
-                { student: userId },
-                { $addToSet: { course: course._id } },
-                { new: true }
-            );
-        }
+        console.log("1");
+
+        const update = await Enrollment.findOneAndUpdate(
+            { student: userId },
+            { $addToSet: { course: course._id } },
+            { new: true }
+        );
+
         // Create an enrollment for the student in the course
-        
+
 
         // Update the user's enrolledCourses field
         /* await User.findByIdAndUpdate(req.currentUser.id, {
             $addToSet: { enrolledCourses: course._id } // Add the course to the enrolledCourses array
         });*/
-        console.log("sucess");
-        res.status(200).json("sucess");
+
+
+        res.status(200).json({ message: "success", enrollement: update });
+
     } catch (error) {
         next(new CustomError(error.message, 500));
     }
@@ -59,8 +60,7 @@ const getCoursesByStudent = asyncHandler(async (req, res, next) => {
 
         // Find the enrolled courses for the student
         const enrolledCourses = await Enrollment.find(
-            { student: req.currentUser.id, course: { $ne: null } },
-            { _id: 0, student: 0 })
+            { student: req.currentUser.id, course: { $ne: null } })
             .populate('course');
 
         const flattenedCourses = enrolledCourses.flatMap(item => item.course);
@@ -69,7 +69,7 @@ const getCoursesByStudent = asyncHandler(async (req, res, next) => {
             next(new CustomError('No enrolled courses found for the student', 404));
         }
 
-        res.status(200).json(flattenedCourses);
+        res.status(200).json({ courses: flattenedCourses });
     } catch (error) {
         next(new CustomError(error.message, 500));
     }
