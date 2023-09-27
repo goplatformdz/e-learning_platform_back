@@ -11,8 +11,6 @@ const {
     subscribeToNewsLetter,
     forgotPassword,
     resetPassword,
-
-    logoutUser,
     checkLogin,
     updateStatus
 } = require('../controllers/userCtrl');

@@ -284,8 +284,6 @@ module.exports = {
     subscribeToNewsLetter,
     forgotPassword,
     resetPassword,
-
-    logoutUser,
     checkLogin,
     updateStatus
 
