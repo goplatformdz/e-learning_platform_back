@@ -72,7 +72,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
     } catch (error) {
         return next(new CustomError(error.message, 500));
     }
-}); 
+});
 
 
 const forgotPassword = asyncHandler(async (req, res, next) => {
@@ -288,7 +288,5 @@ module.exports = {
     logoutUser,
     checkLogin,
     updateStatus
-
-    getCurrentUser,
 
 };
