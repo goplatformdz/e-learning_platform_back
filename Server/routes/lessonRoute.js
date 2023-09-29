@@ -19,6 +19,6 @@ router.get("/all-lessons/:id",  getAllLessons);
 router.get("/all-lessons-default/:id", getAllLessonsNotLogged);
 router.get("/all-lessons/admin/:id", validateToken, isAdmin, getAllLessonsAdmin);
 router.get('/search_lesson', searchByLessonName);
-router.get("/:id", validateToken, isAdmin, getLesson);
+router.get("/:id", validateToken, getLesson);
 
 module.exports = router;

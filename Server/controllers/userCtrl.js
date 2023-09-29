@@ -84,8 +84,8 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
             const resetToken = user.createPasswordResetToken()
             await user.save({ validateBeforeSave: false })
 
-            const resetUrl = `${req.protocol}://${req.get('host')}/api/users/resetPassword/${resetToken}`;
-            const text = `We have received a  password reset request, please click in the link below to reset your password\n\n ${resetUrl}\n\nNote: this link will expire in 5 minutes`;
+            const resetUrl = `${req.protocol}://localhost:8080/api/users/resetPassword/${resetToken}`;
+            const text = `We have received a password reset request, please click in the link below to reset your password\n\n ${resetUrl}\n\nNote: this link will expire in 5 minutes`;
 
 
             try {
@@ -115,25 +115,29 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
 
 const resetPassword = asyncHandler(async (req, res, next) => {
     try {
-        const token = crypto.createHash('sha256').update(req.params.token).digest('hex')
+        const token = crypto.createHash('sha256').update(req.params.token).digest('hex');
         const user = await User.findOne({ passwordResetToken: token, passwordResetTokenExpires: { $gt: Date.now() } });
+
         if (!user) {
             return next(new CustomError(`User not found`, 404));
         }
 
+        // Update the password and confirmPassword fields
         user.password = req.body.password;
-        user.resetToken = undefined;
-        user.passwordResetTokenExpires = undefined
 
-        user.save();
-        const accessToken = generateToken(user);
-        res.cookie(
-            'access-token', accessToken,
-            { maxAge: 24 * 60 * 60 * 1000, }
-        );
-        res.status(200).json({ message: 'User logged in successfully', data: user, token: accessToken });
+        // Clear the reset token and expiration date
+        user.passwordResetToken = undefined;
+        user.passwordResetTokenExpires = undefined;
+
+        // Save the updated user document
+        await user.save();
+
+
+
+        // Send a success response
+        res.status(200).json({ message: 'Password reset successfully', data: user });
     } catch (error) {
-        return next(new CustomError('Token is invalid or has expired', 500));
+        return next(new CustomError(error, 500));
     }
 });
 

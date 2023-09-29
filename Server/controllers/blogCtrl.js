@@ -28,13 +28,16 @@ const createBlog = asyncHandler(async (req, res, next) => {
                             resolve(result);
                         }
                     }
+
                 ).end(imageData.data);
+
             });
         }
 
         // Upload the first image and get its URL
         const R1 = await uploadImage(image1);
         const url1 = R1.url;
+
 
         // Upload the second image and get its URL
         const R2 = await uploadImage(image2);
@@ -62,7 +65,7 @@ const createBlog = asyncHandler(async (req, res, next) => {
 
         res.status(200).json({ message: 'Blog post successfully added', data: responseData });
     } catch (error) {
-        
+
         next(new CustomError('Error while creating a blog post', 500));
     }
 });
