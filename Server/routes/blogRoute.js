@@ -9,9 +9,9 @@ const {
 } = require('../controllers/blogCtrl');
 const { validateToken, isAdmin } = require('../middlewares/validateToken');
 
-router.post("/addBlog", validateToken, isAdmin, createBlog);
-router.put("/updateBlog/:id", validateToken, isAdmin, updateBlog);
-router.delete("/deleteBlog/:id", validateToken, isAdmin, deleteBlog);
+router.post("/addBlog",  createBlog);
+router.put("/updateBlog/:id",updateBlog);
+router.delete("/deleteBlog/:id",  deleteBlog);
 router.get("/all-blogs", getAllBlogs);
 router.get("/:id", getBlog);
 

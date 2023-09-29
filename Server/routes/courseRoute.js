@@ -14,9 +14,9 @@ const {
 const { validateToken, isAdmin } = require('../middlewares/validateToken');
 
 
-router.post("/addCourse",validateToken, createCourse);
+router.post("/addCourse", createCourse);
 router.put("/updateCourse/:id", validateToken, updateCourse);
-router.delete("/deleteCourse/:id", validateToken, isAdmin, deleteCourse);
+router.delete("/deleteCourse/:id",  deleteCourse);
 router.get("/all-courses", getAllCourses);
 
 router.post('/search_course', searchByCourseName);

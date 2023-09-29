@@ -42,7 +42,7 @@ app.use('/api/share', shareRoutes)
 app.use('/api/notifications', notificationRoutes)
 app.use('/api/messages', messageRoutes)
 app.use('/api/chatrooms', chatroomRoutes)
-app.use('/api/blog', blogRoutes)
+app.use('/api/blogs', blogRoutes)
 
 
 app.all('*', (req, res, next) => {

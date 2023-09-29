@@ -83,79 +83,60 @@ const createCourse = asyncHandler(async (req, res, next) => {
 
 const updateCourse = asyncHandler(async (req, res, next) => {
     try {
-      const { id } = req.params;
-      const { courseName, description, instructor, categoryName } = req.body;
-  
-      const category = await Category.findOne({ name: categoryName });
-      if (!category) return next(new CustomError(`Category with the name of ${categoryName} does not exist`, 404));
-  
-      // Check if there are uploaded images in the request
-      const { image1, image2 } = req.files;
-  
-      // Function to upload an image to Cloudinary
-      function uploadImage(imageData) {
-        return new Promise((resolve, reject) => {
-          cloudinary.uploader.upload_stream(
-            {},
-            (error, result) => {
-              if (error) {
-                reject(error);
-              } else {
-                resolve(result);
-              }
-            }
-          ).end(imageData.data);
-        });
-      }
-  
-      // Upload images if they exist in the request
-      let url1 = null;
-      let url2 = null;
-  
-      if (image1) {
-        const R1 = await uploadImage(image1);
-        url1 = R1.url;
-      }
-  
-      if (image2) {
-        const R2 = await uploadImage(image2);
-        url2 = R2.url;
-      }
-  
-      // Update the course, including image URLs if they were uploaded
-      const updateFields = {
-        courseName,
-        description,
-        instructor,
-        category: category._id
-      };
-  
-      if (url1) {
-        updateFields.photo1 = url1;
-      }
-  
-      if (url2) {
-        updateFields.photo2 = url2;
-      }
-  
-      const course = await Course.findByIdAndUpdate(
-        id,
-        updateFields,
-        {
-          new: true,
+        const { id } = req.params;
+        const { courseName, description, instructor, categoryName } = req.body;
+        const { image1 } = req.files;
+        const { image2 } = req.files;
+
+        // Check if the course with the given ID exists
+        const existingCourse = await Course.findById(id);
+        if (!existingCourse) {
+            return next(new CustomError(`Course with the ID ${id} does not exist`, 404));
         }
-      );
-  
-      if (!course) {
-        return next(new CustomError(`Couldn't find course with the id of ${id}`, 404));
-      }
-  
-      res.status(200).json({ message: 'Course updated successfully', data: course });
+
+        // Upload images to Cloudinary
+        function uploadImage(imageData) {
+            return new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream({}, (error, result) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(result);
+                    }
+                }).end(imageData.data);
+            });
+        }
+
+        const R1 = await uploadImage(image1);
+        const R2 = await uploadImage(image2);
+        const url1 = R1.url;
+        const url2 = R2.url;
+
+        console.log(url1, url2);
+
+        // Find the category by name
+        const category = await Category.findOne({ name: categoryName });
+        if (!category) {
+            return next(new CustomError(`Category with the name of ${categoryName} does not exist`, 404));
+        }
+
+        // Update the course with the new data
+        existingCourse.courseName = courseName;
+        existingCourse.description = description;
+        existingCourse.instructor = instructor;
+        existingCourse.category = category._id;
+        existingCourse.photo1 = url1;
+        existingCourse.photo2 = url2;
+
+        // Save the updated course
+        const updatedCourse = await existingCourse.save();
+
+        res.status(200).json({ message: 'Course successfully updated', data: { updatedCourse } });
     } catch (error) {
-      next(new CustomError('Error while updating course', 500));
+        next(new CustomError(error.message, 500));
     }
-  });
-  
+});
+
 
 const searchByCourseName = asyncHandler(async (req, res, next) => {
     try {

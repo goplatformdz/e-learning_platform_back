@@ -11,8 +11,8 @@ const {
 const { validateToken, isAdmin } = require('../middlewares/validateToken');
 
 
-router.post("/addCategory", validateToken, isAdmin, createCategory);
-router.put("/updateCategory/:id", validateToken, isAdmin, updateCategory);
+router.post("/addCategory",  createCategory);
+router.put("/updateCategory/:id", updateCategory);
 router.delete("/deleteCategory/:id", validateToken, isAdmin, deleteCategory);
 router.get("/all-categories", getAllCategories);
 
