@@ -1,34 +1,99 @@
 const Category = require('../models/categoryModel');
 const CustomError = require('../utils/customError');
 const asyncHandler = require('express-async-handler');
+const cloudinary = require('cloudinary').v2;
+          
+cloudinary.config({ 
+  cloud_name: 'dqwbtcthz', 
+  api_key: '412811566196319', 
+  api_secret: 'J-nBiGA6QX7weGf7WVEIPwhwioo' 
+});
 
 const createCategory = asyncHandler(async (req, res, next) => {
     try {
-        const newCategory = await Category.create(req.body);
-        res.status(200).json({ message: 'Category successfully added', data: newCategory });
+        const { name } = req.body;
+        const { image } = req.files;
+
+        function uploadImage(imageData) {
+            return new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream(
+                    {},
+                    (error, result) => {
+                        if (error) {
+                            reject(error);
+                        } else {
+                            resolve(result);
+                            // You can access the public URL of the uploaded image using result.url
+                        }
+                    }
+                ).end(imageData.data);
+            });
+        }
+
+        const R = await uploadImage(image);
+        const imageUrl = R.url;
+
+        const newCategory = await Category.create({
+            name,
+            image: imageUrl,
+            
+        });
+        
+        console.log(name);
+        console.log(image)
+        res.status(200).json({ message: 'Category successfully added', data: {newCategory}});
     } catch (error) {
         return next(new CustomError('Error while creating category', 500));
     }
 });
 
-const updateCategory = asyncHandler(async (req, res, next) => {
-    const { id } = req.params;
-    try {
-        const category = await Category.findByIdAndUpdate(
-            id,
-            { name: req?.body?.name },
-            { new: true }
-        );
 
-        if (!category) {
-            return next(new CustomError(`Couldn't find category with the id of ${id}`, 404));
+const updateCategory = asyncHandler(async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { name } = req.body;
+        const { image } = req.files;
+
+        const categoryToUpdate = await Category.findById(id);
+
+        if (!categoryToUpdate) {
+            return next(new CustomError(`Category with ID ${id} not found`, 404));
         }
 
-        res.status(200).json({ message: 'Updated Successfully', data: category });
+        // Define a function to upload a new image to Cloudinary
+        function uploadImage(imageData) {
+            return new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream(
+                    {},
+                    (error, result) => {
+                        if (error) {
+                            reject(error);
+                        } else {
+                            resolve(result);
+                            // You can access the public URL of the uploaded image using result.url
+                        }
+                    }
+                ).end(imageData.data);
+            });
+        }
+
+        // Upload the new image and get its URL
+        const R = await uploadImage(image);
+        const imageUrl = R.url;
+
+        // Update the category's information, including the new image URL
+        categoryToUpdate.name = name;
+        categoryToUpdate.image = imageUrl;
+
+        // Save the updated category
+        await categoryToUpdate.save();
+
+        res.status(200).json({ message: 'Category successfully updated', data: categoryToUpdate });
     } catch (error) {
         return next(new CustomError('Error while updating category', 500));
     }
 });
+
 
 const getAllCategories = asyncHandler(async (req, res, next) => {
     try {
