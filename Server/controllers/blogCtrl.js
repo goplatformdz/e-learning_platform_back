@@ -5,7 +5,45 @@ const moment = require('moment');
 
 const createBlog = asyncHandler(async (req, res, next) => {
     try {
-        const newBlog = await Blog.create(req.body);
+        const { title, content, author } = req.body;
+        const { image1, image2 } = req.files;
+
+        // Define a function to upload an image to Cloudinary
+        function uploadImage(imageData) {
+            return new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream(
+                    {},
+                    (error, result) => {
+                        if (error) {
+                            reject(error);
+                        } else {
+                            resolve(result);
+                        }
+                    }
+                ).end(
+                    imageData.data
+                );
+            });
+        }
+
+        // Upload the first image and get its URL
+        const R1 = await uploadImage(image1);
+        const url1 = R1.url;
+
+        // Upload the second image and get its URL
+        const R2 = await uploadImage(image2);
+        const url2 = R2.url;
+
+
+
+        const newBlog = await Blog.create({
+            title,
+            content,
+            author,
+            photo1: url1,
+            photo2: url2,
+
+        });
 
         // Format the createdAt field to "DD/MM/YYYY" format
         const formattedCreatedAt = moment(newBlog.createdAt).format('DD/MM/YYYY');
@@ -18,7 +56,8 @@ const createBlog = asyncHandler(async (req, res, next) => {
 
         res.status(200).json({ message: 'Blog post successfully added', data: responseData });
     } catch (error) {
-        return next(new CustomError('Error while creating a blog post', 500));
+
+        next(new CustomError('Error while creating a blog post', 500));
     }
 });
 

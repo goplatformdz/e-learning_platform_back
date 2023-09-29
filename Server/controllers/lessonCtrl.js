@@ -56,13 +56,13 @@ const updateLesson = asyncHandler(async (req, res, next) => {
 
 const getAllLessonsAdmin = asyncHandler(async (req, res, next) => {
     try {
-        const { courseName } = req.body;
+        const { id } = req.params;
+        const course = await Course.findById(id);
 
-
-        const course = await Course.findOne({ courseName: courseName });
         if (!course) return next(new CustomError(`Course with the name of ${courseName} does not exist`, 404));
 
-        const lessons = await Lesson.find({ course_id: course._id });
+        const lessons = await Lesson.find({ course_id: id }).populate('course_id');
+
         res.status(200).json(lessons);
     } catch (error) {
         next(new CustomError(error.message, 500));
@@ -80,6 +80,7 @@ const getAllLessonsNotLogged = asyncHandler(async (req, res, next) => {
 
         const limitedLessons = lessons.map(lesson => {
             return ({
+                _id: lesson._id,
                 lessonName: lesson.lessonName,
                 description: lesson.description,
                 duration: lesson.duration,
@@ -113,7 +114,7 @@ const getAllLessons = asyncHandler(async (req, res, next) => {
             limitedLessons = lessons.map(lesson => {
                 return ({
                     lessonName: lesson.lessonName,
-                    id: lesson._id,
+                    _id: lesson._id,
                     description: lesson.description,
                     duration: lesson.duration,
 

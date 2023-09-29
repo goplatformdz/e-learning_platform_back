@@ -21,23 +21,15 @@ const userSchema = mongoose.Schema({
   },
   phoneNumber: {
     type: String,
-    required: true,
   },
   password: {
     type: String,
     required: true,
-    minlength: 8
   },
 
   confirmPassword: {
     type: String,
-    required: true,
-    validate: {
-      validator: function (val) {
-        return val === this.password
-      },
-      message: 'Password & Confirm Password does not match.'
-    }
+
   },
   role: {
     type: String,
