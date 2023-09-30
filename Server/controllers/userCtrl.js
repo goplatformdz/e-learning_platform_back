@@ -146,21 +146,22 @@ const updateStatus = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
 
     try {
-        const user = await User.findByIdAndUpdate(
-            id,
-            { status: 'active' }, // Update the status to 'active'
-            { new: true }
-        );
+        const user = await User.findById(id);
 
         if (!user) {
             return next(new CustomError(`User with ID ${id} not found`, 404));
         }
+
+        // Toggle the status between "Active" and "Pending"
+        user.status = user.status === 'active' ? 'pending' : 'active';
+        await user.save();
 
         res.status(200).json({ message: 'Status updated successfully', data: user });
     } catch (error) {
         return next(new CustomError('Error during status update process', 500));
     }
 });
+
 
 
 
@@ -201,7 +202,7 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
 const getAllStudents = asyncHandler(async (req, res, next) => {
     try {
         // Query the database for users with the "student" role and sort them by their first name in ascending order
-        const students = await User.find({ role: 'student' }).sort({ firstname: 1 , lastname: 1  });
+        const students = await User.find({ role: 'student' }).sort({ firstname: 1, lastname: 1 });
 
         res.status(200).json(students);
     } catch (error) {
