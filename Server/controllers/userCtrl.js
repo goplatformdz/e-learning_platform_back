@@ -144,12 +144,11 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 
 const updateStatus = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
-    const { status } = req.body; // Extract the new status from the request body
 
     try {
         const user = await User.findByIdAndUpdate(
             id,
-            { status: status }, // Update only the status field
+            { status: 'active' }, // Update the status to 'active'
             { new: true }
         );
 
@@ -162,6 +161,7 @@ const updateStatus = asyncHandler(async (req, res, next) => {
         return next(new CustomError('Error during status update process', 500));
     }
 });
+
 
 
 
@@ -198,6 +198,19 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
         return next(new CustomError('Error while fetching users', 500));
     }
 });
+const getAllStudents = asyncHandler(async (req, res, next) => {
+    try {
+        // Query the database for users with the "student" role and sort them by their first name in ascending order
+        const students = await User.find({ role: 'student' }).sort({ firstname: 1 , lastname: 1  });
+
+        res.status(200).json(students);
+    } catch (error) {
+        // Handle the error here, e.g., log it or throw a custom error
+        return next(new CustomError('Error while fetching student users', 500));
+    }
+});
+
+
 
 const getUser = asyncHandler(async (req, res, next) => {
 
@@ -282,6 +295,7 @@ module.exports = {
     getAllUsers,
     updateUser,
     getUser,
+    getAllStudents,
     deleteUser,
     loginUser,
     logoutUser,

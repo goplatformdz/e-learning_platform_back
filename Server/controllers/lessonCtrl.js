@@ -84,6 +84,7 @@ const getAllLessonsNotLogged = asyncHandler(async (req, res, next) => {
                 lessonName: lesson.lessonName,
                 description: lesson.description,
                 duration: lesson.duration,
+                video:lesson.video,
                 course_id: course,
             })
         })
