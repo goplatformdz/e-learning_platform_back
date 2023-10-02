@@ -3,11 +3,13 @@ const CustomError = require('../utils/customError');
 const asyncHandler = require('express-async-handler');
 const moment = require('moment');
 const cloudinary = require('cloudinary').v2;
+const dotenv = require('dotenv').config();
+
 
 cloudinary.config({
-    cloud_name: 'dqwbtcthz',
-    api_key: '412811566196319',
-    api_secret: 'J-nBiGA6QX7weGf7WVEIPwhwioo'
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
 });
 
 

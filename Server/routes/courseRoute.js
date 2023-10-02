@@ -8,7 +8,8 @@ const {
     deleteCourse,
     searchByCourseName,
     getCoursesByCategory,
-    getRecommendedCourses
+    getRecommendedCourses,
+    getMyCourses
 
 } = require('../controllers/courseCtrl');
 const { validateToken, isAdmin } = require('../middlewares/validateToken');
@@ -20,6 +21,7 @@ router.post("/coursesByCategory", getCoursesByCategory);
 router.get('/recommended-courses', getRecommendedCourses);
 router.get("/all-courses", getAllCourses);
 router.use(validateToken);
+router.get("/my-courses", getMyCourses);
 router.post("/addCourse", createCourse);
 router.put("/updateCourse/:id", updateCourse);
 router.delete("/deleteCourse/:id", deleteCourse);

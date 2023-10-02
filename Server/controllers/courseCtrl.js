@@ -6,11 +6,13 @@ const Enrollment = require('../models/enrollmentModel');
 const CustomError = require('../utils/customError');
 const asyncHandler = require('express-async-handler');
 const cloudinary = require('cloudinary').v2;
+const dotenv = require('dotenv').config();
+
 
 cloudinary.config({
-    cloud_name: 'dqwbtcthz',
-    api_key: '412811566196319',
-    api_secret: 'J-nBiGA6QX7weGf7WVEIPwhwioo'
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
 });
 
 
@@ -179,6 +181,8 @@ const getAllCourses = asyncHandler(async (req, res, next) => {
 });
 
 
+
+
 const getCourse = asyncHandler(async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -250,6 +254,26 @@ const getRecommendedCourses = async (req, res, next) => {
     }
 };
 
+const getMyCourses = async (req, res, next) => {
+    try {
+        const enrollments = await Enrollment.find({ student: req.currentUser.id }, { _id: 0, student: 0 });
+
+        // Retrieve the courses for each enrollment
+        const myCoursesPromises = enrollments.map(async (enrollment) => {
+            const courseIds = enrollment.course;
+            const courses = await Course.find({ _id: { $in: courseIds } }).populate('category');
+            return courses;
+        });
+
+        const myCourses = await Promise.all(myCoursesPromises);
+
+        res.status(200).json(myCourses);
+    } catch (error) {
+        next(new CustomError(error.message, 500));
+    }
+};
+
+
 
 
 
@@ -263,6 +287,7 @@ module.exports = {
     deleteCourse,
     searchByCourseName,
     getCoursesByCategory,
-    getRecommendedCourses
+    getRecommendedCourses,
+    getMyCourses
 
 };
