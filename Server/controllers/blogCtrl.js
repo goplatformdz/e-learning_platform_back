@@ -3,11 +3,11 @@ const CustomError = require('../utils/customError');
 const asyncHandler = require('express-async-handler');
 const moment = require('moment');
 const cloudinary = require('cloudinary').v2;
-          
-cloudinary.config({ 
-  cloud_name: 'dqwbtcthz', 
-  api_key: '412811566196319', 
-  api_secret: 'J-nBiGA6QX7weGf7WVEIPwhwioo' 
+
+cloudinary.config({
+    cloud_name: 'dqwbtcthz',
+    api_key: '412811566196319',
+    api_secret: 'J-nBiGA6QX7weGf7WVEIPwhwioo'
 });
 
 
@@ -43,7 +43,7 @@ const createBlog = asyncHandler(async (req, res, next) => {
         const R2 = await uploadImage(image2);
         const url2 = R2.url;
 
-        
+
 
         const newBlog = await Blog.create({
             title,
@@ -51,9 +51,9 @@ const createBlog = asyncHandler(async (req, res, next) => {
             author,
             photo1: url1,
             photo2: url2,
-            
+
         });
-    
+
         // Format the createdAt field to "DD/MM/YYYY" format
         const formattedCreatedAt = moment(newBlog.createdAt).format('DD/MM/YYYY');
 
@@ -74,7 +74,7 @@ const updateBlog = asyncHandler(async (req, res, next) => {
     try {
         const { id } = req.params; // Get the ID of the blog post to update
         const { title, content, author } = req.body;
-        const { image1, image2 } = req.files;
+        const { image1, image2 } = req.files ? req.files : '';
 
         // Define a function to upload an image to Cloudinary
         function uploadImage(imageData) {
@@ -92,13 +92,21 @@ const updateBlog = asyncHandler(async (req, res, next) => {
             });
         }
 
-        // Upload the first image and get its URL
-        const R1 = await uploadImage(image1);
-        const url1 = R1.url;
+        let url1 = ""
+        let url2 = ""
+        if (image1) {
+            // Upload the first image and get its URL
+            const R1 = await uploadImage(image1);
+            url1 = R1.url;
+        }
 
-        // Upload the second image and get its URL
-        const R2 = await uploadImage(image2);
-        const url2 = R2.url;
+        if (image2) {
+            // Upload the second image and get its URL
+            const R2 = await uploadImage(image2);
+            url2 = R2.url;
+        }
+
+        const foundBlog = await Blog.findById(id)
 
         // Find the blog post by ID and update its fields
         const updatedBlog = await Blog.findByIdAndUpdate(
@@ -107,8 +115,8 @@ const updateBlog = asyncHandler(async (req, res, next) => {
                 title,
                 content,
                 author,
-                photo1: url1,
-                photo2: url2,
+                photo1: url1 ? url1 : foundBlog.photo1,
+                photo2: url2 ? url2 : foundBlog.photo2,
             },
             { new: true } // Return the updated blog post
         );
@@ -128,7 +136,7 @@ const updateBlog = asyncHandler(async (req, res, next) => {
 
         res.status(200).json({ message: 'Blog post successfully updated', data: responseData });
     } catch (error) {
-        next(new CustomError('Error while updating the blog post', 500));
+        next(new CustomError(error.message, 500));
     }
 });
 

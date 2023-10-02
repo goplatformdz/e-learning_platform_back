@@ -6,11 +6,11 @@ const Enrollment = require('../models/enrollmentModel');
 const CustomError = require('../utils/customError');
 const asyncHandler = require('express-async-handler');
 const cloudinary = require('cloudinary').v2;
-          
-cloudinary.config({ 
-  cloud_name: 'dqwbtcthz', 
-  api_key: '412811566196319', 
-  api_secret: 'J-nBiGA6QX7weGf7WVEIPwhwioo' 
+
+cloudinary.config({
+    cloud_name: 'dqwbtcthz',
+    api_key: '412811566196319',
+    api_secret: 'J-nBiGA6QX7weGf7WVEIPwhwioo'
 });
 
 
@@ -20,9 +20,9 @@ const createCourse = asyncHandler(async (req, res, next) => {
     try {
         const users = await User.find({});
         const { courseName, description, instructor, categoryName } = req.body;
-        const {image1} = req.files
-        const {image2} = req.files
-        
+        const { image1 } = req.files
+        const { image2 } = req.files
+
 
 
         function uploadImage(imageData) {
@@ -31,23 +31,23 @@ const createCourse = asyncHandler(async (req, res, next) => {
                     {
                     },
                     (error, result) => {
-                      if (error) {
-                        reject(error)
-                      } else {
-                        resolve(result);
-                        // You can access the public URL of the uploaded image using result.url
-                      }
+                        if (error) {
+                            reject(error)
+                        } else {
+                            resolve(result);
+                            // You can access the public URL of the uploaded image using result.url
+                        }
                     }
-                  ).end(imageData.data);
+                ).end(imageData.data);
             });
-          }
-        const  R1 = await uploadImage(image1)
-        const  R2 = await uploadImage(image2)
+        }
+        const R1 = await uploadImage(image1)
+        const R2 = await uploadImage(image2)
         const url1 = R1.url
         const url2 = R2.url
 
-       console.log(url1,url2);
-       
+        console.log(url1, url2);
+
 
         const category = await Category.findOne({ name: categoryName });
         if (!category) return next(new CustomError(`Category with the name of ${categoryName} does not exist`, 404));
@@ -58,7 +58,7 @@ const createCourse = asyncHandler(async (req, res, next) => {
             instructor,
             category: category._id,
             photo1: url1,// Add the photo attribute to the Course model
-            photo2 : url2
+            photo2: url2
         });
 
 
@@ -75,7 +75,7 @@ const createCourse = asyncHandler(async (req, res, next) => {
             }
         }
 
-        res.status(200).json({ message: 'Course successfully created', data: { newCourse, notifications } });
+        res.status(200).json({ message: 'Course successfully created', data: { newCourse } });
     } catch (error) {
         next(new CustomError(error.message, 500));
     }
@@ -85,8 +85,8 @@ const updateCourse = asyncHandler(async (req, res, next) => {
     try {
         const { id } = req.params;
         const { courseName, description, instructor, categoryName } = req.body;
-        const { image1 } = req.files;
-        const { image2 } = req.files;
+        const { image1, image2 } = req.files ? req.files : '';
+
 
         // Check if the course with the given ID exists
         const existingCourse = await Course.findById(id);
@@ -107,10 +107,20 @@ const updateCourse = asyncHandler(async (req, res, next) => {
             });
         }
 
-        const R1 = await uploadImage(image1);
-        const R2 = await uploadImage(image2);
-        const url1 = R1.url;
-        const url2 = R2.url;
+
+        let url1 = ''
+        let url2 = '';
+        if (image1) {
+            const R1 = await uploadImage(image1);
+
+            url1 = R1.url;
+        }
+
+        if (image2) {
+
+            const R2 = await uploadImage(image2);
+            url2 = R2.url;
+        }
 
         console.log(url1, url2);
 
@@ -120,13 +130,16 @@ const updateCourse = asyncHandler(async (req, res, next) => {
             return next(new CustomError(`Category with the name of ${categoryName} does not exist`, 404));
         }
 
+        const courseFounded = await Course.findById(id);
+
+
         // Update the course with the new data
         existingCourse.courseName = courseName;
         existingCourse.description = description;
         existingCourse.instructor = instructor;
         existingCourse.category = category._id;
-        existingCourse.photo1 = url1;
-        existingCourse.photo2 = url2;
+        existingCourse.photo1 = url1 ? url1 : courseFounded.photo1;
+        existingCourse.photo2 = url2 ? url2 : courseFounded.photo2;
 
         // Save the updated course
         const updatedCourse = await existingCourse.save();
@@ -217,9 +230,9 @@ const deleteCourse = asyncHandler(async (req, res, next) => {
 
 const getRecommendedCourses = async (req, res, next) => {
     try {
-        const numberOfRecommendations = 5; // Define the number of courses to recommend
+        const numberOfRecommendations = 4; // Define the number of courses to recommend
         // Retrieve all courses from the database
-        const courses = await Course.find();
+        const courses = await Course.find().populate('category');
         // Retrieve the enrollments count for each course
         const courseEnrollmentCounts = await Promise.all(
             courses.map(async (course) => {

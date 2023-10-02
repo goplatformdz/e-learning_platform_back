@@ -8,11 +8,11 @@ const {
     deleteBlog,
 } = require('../controllers/blogCtrl');
 const { validateToken, isAdmin } = require('../middlewares/validateToken');
-
-router.post("/addBlog",  createBlog);
-router.put("/updateBlog/:id",updateBlog);
-router.delete("/deleteBlog/:id",  deleteBlog);
 router.get("/all-blogs", getAllBlogs);
 router.get("/:id", getBlog);
+router.use(validateToken);
+router.post("/addBlog", createBlog);
+router.put("/updateBlog/:id", updateBlog);
+router.delete("/deleteBlog/:id", deleteBlog);
 
 module.exports = router;

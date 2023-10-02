@@ -30,12 +30,12 @@ router.patch('/resetPassword/:token', resetPassword);
 // Protected Routes (Require Authentication)
 // Middleware for authentication
 
-router.get("/logoutUser", logoutUser);
-router.put("/updateUser/:id", updateUser);
-router.put("/updateStatus/:id",  updateStatus);
-router.delete("/deleteUser/:id", deleteUser);
-router.get("/all-users",  getAllUsers);
-router.get("/all-student",getAllStudents);
-router.get("/:id",  getUser);
+router.patch("/updateStatus/:id", updateStatus);
+router.get("/logoutUser", validateToken, logoutUser);
+router.put("/updateUser/:id", validateToken, updateUser);
+router.delete("/deleteUser/:id", validateToken, deleteUser);
+router.get("/all-users", validateToken, getAllUsers);
+router.get("/all-student", validateToken, getAllStudents);
+router.get("/:id", validateToken, getUser);
 
 module.exports = router;

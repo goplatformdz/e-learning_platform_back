@@ -2,11 +2,13 @@ const Category = require('../models/categoryModel');
 const CustomError = require('../utils/customError');
 const asyncHandler = require('express-async-handler');
 const cloudinary = require('cloudinary').v2;
-          
-cloudinary.config({ 
-  cloud_name: 'dqwbtcthz', 
-  api_key: '412811566196319', 
-  api_secret: 'J-nBiGA6QX7weGf7WVEIPwhwioo' 
+const dotenv = require('dotenv').config();
+
+
+cloudinary.config({
+    cloud_name: 'dqwbtcthz',
+    api_key: '412811566196319',
+    api_secret: 'J-nBiGA6QX7weGf7WVEIPwhwioo'
 });
 
 const createCategory = asyncHandler(async (req, res, next) => {
@@ -36,12 +38,12 @@ const createCategory = asyncHandler(async (req, res, next) => {
         const newCategory = await Category.create({
             name,
             image: imageUrl,
-            
+
         });
-        
+
         console.log(name);
         console.log(image)
-        res.status(200).json({ message: 'Category successfully added', data: {newCategory}});
+        res.status(200).json({ message: 'Category successfully added', data: { newCategory } });
     } catch (error) {
         return next(new CustomError('Error while creating category', 500));
     }
@@ -52,7 +54,7 @@ const updateCategory = asyncHandler(async (req, res, next) => {
     try {
         const { id } = req.params;
         const { name } = req.body;
-        const { image } = req.files;
+        const { image } = req.files ? req.files : '';
 
         const categoryToUpdate = await Category.findById(id);
 
@@ -77,18 +79,27 @@ const updateCategory = asyncHandler(async (req, res, next) => {
             });
         }
 
-        // Upload the new image and get its URL
-        const R = await uploadImage(image);
-        const imageUrl = R.url;
+        let imageUrl = ''
+        if (image) {
 
-        // Update the category's information, including the new image URL
-        categoryToUpdate.name = name;
-        categoryToUpdate.image = imageUrl;
+            const R = await uploadImage(image);
+            imageUrl = R.url;
+        }
+        const foundedCategory = await Category.findById(id)
 
-        // Save the updated category
-        await categoryToUpdate.save();
+        const newCategory = await Category.findByIdAndUpdate(
+            id,
+            {
+                name,
+                image: imageUrl ? imageUrl : foundedCategory.image,
+            },
+            { new: true }
 
-        res.status(200).json({ message: 'Category successfully updated', data: categoryToUpdate });
+
+        );
+
+
+        res.status(200).json({ message: 'Category successfully updated', data: newCategory });
     } catch (error) {
         return next(new CustomError('Error while updating category', 500));
     }
