@@ -48,9 +48,9 @@ app.use('/api/chatrooms', chatroomRoutes)
 app.use('/api/blogs', blogRoutes)
 
 
-/*app.all('*', (req, res, next) => {
+app.all('*', (req, res, next) => {
     next(new CustomError(`Url Not found : ${req.originalUrl}`, 404))
-})*/
+})
 
 app.use(errorHandler)
 
