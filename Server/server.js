@@ -28,7 +28,8 @@ app.use(fileUpload());
 app.use(express.static('public'));
 
 const corsOptions = {
-    origin: ['https://e-learning-platform-front.vercel.app', 'http://localhost:8081'],
+    //origin: ['https://e-learning-platform-front.vercel.app', 'http://localhost:8081'],
+    origin: "*",
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
 };
