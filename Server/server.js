@@ -22,16 +22,16 @@ const fileUpload = require('express-fileupload');
 
 dbConnect()
 app.use(express.json());
-const corsOptions = {
-    origin: ['https://e-learning-platform-front.vercel.app', 'http://localhost:8081'],
-    credentials: true,
-};
-app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(fileUpload());
 app.use(express.static('public'));
 
+const corsOptions = {
+    origin: ['https://e-learning-platform-front.vercel.app', 'http://localhost:8081'],
+    credentials: true,
+};
+app.use(cors(corsOptions));
 app.use('/api/users', usersRoutes)
 app.use('/api/courses', courseRoutes)
 app.use('/api/lessons', lessonRoutes)
