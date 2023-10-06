@@ -26,7 +26,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(fileUpload());
 app.use(express.static('public'));
-
+app.get("/", (req, res) => {
+    res.json("hello")
+})
 const corsOptions = {
     origin: ['https://e-learning-platform-front.vercel.app'/*, 'http://localhost:8081'*/],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
