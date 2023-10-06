@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(fileUpload());
 app.use(express.static('public'));
-app.get("/test", (req, res) => {
+app.get("/", (req, res) => {
     res.json("hello")
 })
 const corsOptions = {
