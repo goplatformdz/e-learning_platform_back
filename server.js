@@ -56,9 +56,10 @@ app.use(errorHandler)
 
 
 
+const HOST = '0.0.0.0'; // Listen on all available network interfaces
 
 
-app.listen(PORT, () => {
+app.listen(PORT, HOST, () => {
     console.log(`Server is running at PORT ${PORT}`)
 })
 
