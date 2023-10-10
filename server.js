@@ -30,7 +30,7 @@ app.get("/", (req, res) => {
     res.json("hello")
 })
 const corsOptions = {
-    origin: ['https://e-learning-platform-front.vercel.app'/*, 'http://localhost:8081'*/],
+    origin: ['http://www.rifk.online', 'http://localhost:8081',],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
 };
@@ -56,10 +56,10 @@ app.use(errorHandler)
 
 
 
-const HOST = '0.0.0.0'; // Listen on all available network interfaces
 
 
-app.listen(PORT, HOST, () => {
+
+app.listen(PORT, () => {
     console.log(`Server is running at PORT ${PORT}`)
 })
 
