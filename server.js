@@ -16,15 +16,16 @@ const notificationRoutes = require('./routes/notificationRoute');
 const messageRoutes = require('./routes/messageRoute');
 const chatroomRoutes = require('./routes/chatroomRoute');
 const blogRoutes = require('./routes/blogRoute');
+const fileRoute = require('./routes/fileRoute');
 const CustomError = require('./utils/customError');
 const cookieParser = require('cookie-parser')
-const fileUpload = require('express-fileupload');
+// const fileUpload = require('express-fileupload');
 
 dbConnect()
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(fileUpload());
+// app.use(fileUpload());
 app.use(express.static('public'));
 app.get("/", (req, res) => {
     res.json("hello")
@@ -46,6 +47,9 @@ app.use('/api/notifications', notificationRoutes)
 app.use('/api/messages', messageRoutes)
 app.use('/api/chatrooms', chatroomRoutes)
 app.use('/api/blogs', blogRoutes)
+app.use('/api/file', fileRoute);
+
+
 
 
 app.all('*', (req, res, next) => {
