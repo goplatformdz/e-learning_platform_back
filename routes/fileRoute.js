@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { uploadFile } = require("../controllers/fileCtrl");
+const { uploadFile, getPdfById, getAllPdfs, updateFile, grantAccess } = require("../controllers/fileCtrl");
 
 const upload = require('../fileUtils/multer');
 
 // Define a route for file upload
+router.get('/find/:id', getPdfById);
+router.get('/findAll', getAllPdfs);
 router.post('/upload', upload.single('pdf'), uploadFile);
+router.put('/update/:id', updateFile);
+router.post('/grant-access', grantAccess);
 
 
 module.exports = router;

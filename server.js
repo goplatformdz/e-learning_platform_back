@@ -5,6 +5,8 @@ const dotenv = require('dotenv').config();
 const PORT = process.env.PORT || 4000
 const dbConnect = require('./config/dbConnect')
 const errorHandler = require('./middlewares/errorHandler')
+
+// Import routes
 const usersRoutes = require('./routes/userRoute');
 const courseRoutes = require('./routes/courseRoute');
 const lessonRoutes = require('./routes/lessonRoute');
@@ -17,6 +19,9 @@ const messageRoutes = require('./routes/messageRoute');
 const chatroomRoutes = require('./routes/chatroomRoute');
 const blogRoutes = require('./routes/blogRoute');
 const fileRoute = require('./routes/fileRoute');
+const couponRoute = require('./routes/couponRoute');
+
+
 const CustomError = require('./utils/customError');
 const cookieParser = require('cookie-parser')
 // const fileUpload = require('express-fileupload');
@@ -36,18 +41,19 @@ const corsOptions = {
     credentials: true,
 };
 app.use(cors(corsOptions));
-app.use('/api/users', usersRoutes)
-app.use('/api/courses', courseRoutes)
-app.use('/api/lessons', lessonRoutes)
-app.use('/api/comments', commentRoutes)
-app.use('/api/enrollments', enrollmentRoutes)
-app.use('/api/categories', categoryRoutes)
-app.use('/api/share', shareRoutes)
-app.use('/api/notifications', notificationRoutes)
-app.use('/api/messages', messageRoutes)
-app.use('/api/chatrooms', chatroomRoutes)
-app.use('/api/blogs', blogRoutes)
+app.use('/api/users', usersRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/lessons', lessonRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/enrollments', enrollmentRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/share', shareRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/chatrooms', chatroomRoutes);
+app.use('/api/blogs', blogRoutes);
 app.use('/api/file', fileRoute);
+app.use('/api/coupon', couponRoute);
 
 
 
@@ -56,7 +62,7 @@ app.all('*', (req, res, next) => {
     next(new CustomError(`Url Not found : ${req.originalUrl}`, 404))
 })
 
-app.use(errorHandler)
+app.use(errorHandler);
 
 
 
