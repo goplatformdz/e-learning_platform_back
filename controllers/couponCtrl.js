@@ -13,7 +13,6 @@ const getCoupon = async (req, res) => {
 
 const addCoupon = async (req, res) => {
     const newCoupon = new Coupon(req.body);
-    console.log(newCoupon);
     try {
         const savedCoupon = await newCoupon.save();
         res.status(201).json({ savedCoupon });
@@ -58,13 +57,11 @@ const validateCoupon = async (req, res) => {
 
         // Grant access to the associated PDF file and add the userId to the allowedUsers array
         const file = await File.findById(fileId);
-        console.log(file);
         if (!file) {
             return res.status(404).json({ error: 'PDF file not found' });
         }
 
         // Ensure that the allowedUsers array exists and is an array
-        console.log(file.allowedUsers);
         if (!file.allowedUsers) {
             file.allowedUsers = [];
         }
