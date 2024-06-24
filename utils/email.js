@@ -13,6 +13,8 @@ const sendMail = async (options) => {
             },
         });
 
+
+
         const mailOptions = {
             from: 'managerplatfrome@gmail.com',
             to: options.to,
@@ -21,7 +23,16 @@ const sendMail = async (options) => {
             html: options.html,
         };
 
-        await transporter.sendMail(mailOptions);
+
+        return new Promise((resolve, reject) => {
+            transporter.sendMail(mailOptions, (err, info) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(info);
+                }
+            });
+        });
     } catch (error) {
         next(new CustomError('An error occurred while sending the confirmation email', 500));
     }

@@ -31,7 +31,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
             return next(new CustomError('Invalid Credentials', 402));
         }
     } catch (err) {
-        return next(new CustomError('Error while logging in', 500));
+        return next(new CustomError(err, 500));
     }
 });
 
@@ -40,7 +40,7 @@ const logoutUser = asyncHandler(async (req, res, next) => {
 
     try {
         const user = await User.findById(objectId);
-        res.clearCookie('access-token'); // Clear the access token cookie
+        await res.clearCookie('access-token'); // Clear the access token cookie
         res.status(200).json({ message: 'User logged out successfully', user });
     } catch (error) {
         return next(new CustomError('Error during logout process', 500));
@@ -62,6 +62,15 @@ const registerUser = asyncHandler(async (req, res, next) => {
                         httpOnly: true
                     }
                 );
+                const activationUrl = `https://rifk.online/account-activation`;
+                const text = `Click on the link below to activate your account please:\n\n ${activationUrl} `;
+
+                await sendMail({
+                    to: email,
+                    subject: 'Account activation',
+                    text,
+
+                })
                 res.status(200).json({ message: 'User successfully registered', data: newUser, token: accessToken });
             } catch (error) {
                 return next(new CustomError(error.message, 500));
@@ -84,7 +93,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
             const resetToken = user.createPasswordResetToken()
             await user.save({ validateBeforeSave: false })
 
-            const resetUrl = `${req.protocol}://localhost:8080/api/users/resetPassword/${resetToken}`;
+            const resetUrl = `http://localhost:8001/api/users/resetPassword/${resetToken}`;
             const text = `We have received a password reset request, please click in the link below to reset your password\n\n ${resetUrl}\n\nNote: this link will expire in 5 minutes`;
 
 
@@ -254,6 +263,24 @@ const sendNewsletterConfirmationEmail = asyncHandler(async (email, next) => {
 
 });
 
+const searchByUserName = asyncHandler(async (req, res, next) => {
+    try {
+        const { lastname } = req.body;
+
+        if (!lastname) {
+            return next(new CustomError('Student email is required.', 500));
+        }
+
+        const regex = new RegExp(lastname, 'i'); // 'i' flag for case-insensitive search
+
+        const result = await User.find({ lastname: regex });
+
+        res.status(200).json({ success: true, result });
+    } catch (error) {
+        next(new CustomError(error.message, 500));
+    }
+});
+
 const subscribeToNewsLetter = asyncHandler(async (req, res, next) => {
     try {
         const { email } = req.body;
@@ -304,6 +331,7 @@ module.exports = {
     forgotPassword,
     resetPassword,
     checkLogin,
-    updateStatus
+    updateStatus,
+    searchByUserName
 
 };

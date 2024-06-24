@@ -1,8 +1,10 @@
 const express = require('express');
 const app = express();
+const https = require('https');
 const cors = require('cors');
 const dotenv = require('dotenv').config();
 const PORT = process.env.PORT || 4000
+const fs = require('fs');
 const dbConnect = require('./config/dbConnect')
 const errorHandler = require('./middlewares/errorHandler')
 const usersRoutes = require('./routes/userRoute');
@@ -20,6 +22,14 @@ const CustomError = require('./utils/customError');
 const cookieParser = require('cookie-parser')
 const fileUpload = require('express-fileupload');
 
+const httpsOptions = {
+    cert: fs.readFileSync('./ssl/certificate.crt'),
+    ca: fs.readFileSync('./ssl/ssl-bundles.ca-bundle'),
+    key: fs.readFileSync('./ssl/ssl-key.key'),
+};
+
+const httpsServer = https.createServer(httpsOptions, app);
+
 dbConnect()
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -30,7 +40,7 @@ app.get("/", (req, res) => {
     res.json("hello")
 })
 const corsOptions = {
-    origin: ['http://www.rifk.online', 'http://localhost:8081',],
+    origin: ['http://localhost:8001', 'http://localhost:8080'], // This allows requests from any origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
 };

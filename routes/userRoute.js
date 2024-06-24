@@ -13,7 +13,8 @@ const {
     resetPassword,
     checkLogin,
     updateStatus,
-    getAllStudents
+    getAllStudents,
+    searchByUserName
 } = require('../controllers/userCtrl');
 
 const { validateToken, isAdmin, isStudent } = require('../middlewares/validateToken');
@@ -35,6 +36,7 @@ router.get("/logoutUser", validateToken, logoutUser);
 router.put("/updateUser/:id", validateToken, updateUser);
 router.delete("/deleteUser/:id", validateToken, deleteUser);
 router.get("/all-users", validateToken, getAllUsers);
+router.post("/searchStudent", searchByUserName);
 router.get("/all-student", validateToken, getAllStudents);
 router.get("/:id", validateToken, getUser);
 
